@@ -43,6 +43,10 @@ The three lines meet because they contain the same string. There is no foreign k
 declare: identical bytes are the same node, so the join is already there when you walk it —
 from the login, to the machine it came from, to its name in DNS.
 
+<p align="center">
+  <img src="images/PointingAtPointing-green.png" alt="Three identical figures pointing at each other" width="420">
+</p>
+
 ## Your concepts, translated
 
 | You know | Here | What changes |
