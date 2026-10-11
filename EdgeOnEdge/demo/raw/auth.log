@@ -1,0 +1,6 @@
+eoe: syslog
+Sep 18 03:12:01 backup-03 sshd[4121]: Accepted publickey for svc-backup from 10.2.14.9 port 51022
+Sep 18 03:40:17 build-01 sshd[811]: Failed password for root from 203.0.113.50 port 40110
+Sep 18 03:40:19 build-01 sshd[811]: Failed password for root from 203.0.113.50 port 40114
+Sep 18 09:02:44 build-01 sshd[1290]: Accepted password for tomas from 10.2.14.7 port 60211
+Sep 18 09:05:00 build-01 CRON[1301]: (root) CMD (run-parts /etc/cron.hourly)

@@ -1,0 +1,8 @@
+node_modules/**
+local/**
+atoms.txt
+pile.atoms
+*.atoms.lock
+dist/
+producers/**/bin/
+producers/**/obj/

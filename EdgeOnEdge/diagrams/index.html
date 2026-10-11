@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blocks</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Blocks<span> / three slots, endless connections</span></h1>
+    <div class="tools">
+      <label>Characters / slot <input id="limit" type="number" min="1" max="100" value="10" aria-label="Character limit per slot"></label>
+      <label>Squares / face <input id="squares" type="number" min="1" max="8" value="4" aria-label="Domino squares per face"></label>
+      <button id="view" aria-label="Switch between stacked blocks and flat dominoes">View: Stacks</button>
+      <span class="stepper"><button id="back" aria-label="Show one block fewer">◀ Back</button><span id="step" aria-live="polite">1 / 1</span><button id="forward" aria-label="Show one block more">Forward ▶</button></span>
+      <button id="reset">Reset</button>
+      <button id="export">Export JSON</button>
+      <button id="import">Import JSON</button>
+    </div>
+  </header>
+  <main>
+    <div class="hint">Click a slot to edit the block. <span>Use + to attach. New blocks sit on top.</span></div>
+    <div id="viewport" tabindex="0" aria-label="Diagram canvas"><div id="board"></div></div>
+    <footer><span id="count">1 block</span><span>Horizontal ↔ Vertical</span></footer>
+  </main>
+  <dialog id="editor">
+    <form id="form">
+      <div class="dialog-title"><h2 id="title">Edit block</h2><button type="button" id="close" aria-label="Close">×</button></div>
+      <label class="field">Three labels <input id="labels" placeholder="a,b,c" autocomplete="off" spellcheck="false"></label>
+      <p id="help">Separate labels with commas or spaces.</p>
+      <div class="settings">
+        <label>Direction <select id="direction"><option value="h">Horizontal</option><option value="v">Vertical</option></select></label>
+      </div>
+      <p id="shared"></p>
+      <div class="actions"><button type="button" id="delete">Delete block</button><button type="submit" class="primary" id="save">Save</button></div>
+    </form>
+  </dialog>
+  <dialog id="json-dialog">
+    <form id="json-form">
+      <div class="dialog-title"><h2 id="json-title">Export JSON</h2><button type="button" id="json-close" aria-label="Close">×</button></div>
+      <label class="field" for="json-text">Diagram JSON</label>
+      <textarea id="json-text" spellcheck="false" rows="12"></textarea>
+      <p id="json-help"></p>
+      <p id="json-error" role="alert"></p>
+      <div class="actions"><button type="button" id="copy-json">Copy JSON</button><button type="submit" id="import-json" class="primary">Import</button></div>
+    </form>
+  </dialog>
+  <script src="app.js"></script>
+</body>
+</html>

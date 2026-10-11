@@ -1,0 +1,16 @@
+#! scope prose@4
+#! vocabulary geography
+#! <NOUN> prose hint sentence word city river kind
+#! <VERB> sits-on kind is-a
+# Plain sentences:   paris sits on the seine
+# A sentence is a line and a word is what spaces separate. A few shapes of sentence say
+# more: which city, on which river, and that a city is a place.
+# on	id	tags	regex
+file	hint	hint	^eoe: prose$
+file	prose	prose	(?<=^eoe: prose\n)[\s\S]+
+prose	sentence	sentence	^.+$
+sentence	word	word	\S+
+sentence	city	city	^(\S+) (?:is a city$|sits on )
+sentence	river	river sits-on	 sits on the (\S+)$
+sentence	kind	kind	^a (\S+) is a \S+$
+sentence	kind	kind is-a	^a \S+ is a (\S+)$

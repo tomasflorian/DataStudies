@@ -1,0 +1,9 @@
+# A machine, from everything the pile says about it: one card per string IT found as a host.
+# Run:  ./rungs/11-form.ts forms/machine.form demo/layers/*.eoe
+
+form      machine
+each      host@IT
+ip        find address          need    # the address it has, not the ips that logged in to it
+dns       whole=zone-record
+logins    beside:user           many
+programs  beside:program        many

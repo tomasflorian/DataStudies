@@ -1,0 +1,4 @@
+node_modules/**
+visualizer/.next/**
+visualizer/node_modules/**
+

@@ -1,0 +1,10 @@
+eoe: receipt
+BEC DE JARDIN
+https://becdejardin.example
+order 4417
+ordered by dana
+submitted from web-01.corp
+ship to paris
+1x rose Mme Isaac Pereire
+2x lilly Casa Blanca
+1x bugambilia Barbara Karst

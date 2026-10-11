@@ -1,0 +1,13 @@
+#! scope catalogue@6
+#! vocabulary gardening
+#! <NOUN> catalogue hint catalogue-row flower plant place
+#! <VERB> name kind bred-in
+# A plant catalogue:   Mme Isaac Pereire,rose,paris
+# A blank field matches nothing, and nothing is written for it.
+# on	id	tags	regex
+file	hint	hint	^eoe: catalogue$
+file	catalogue	catalogue	(?<=^eoe: catalogue\n)[\s\S]+
+catalogue	catalogue-row	catalogue-row	^(?!name,).+$
+catalogue-row	flower	flower name	^([^,]+)
+catalogue-row	plant	plant kind	^[^,]*,([^,]+)
+catalogue-row	place	place bred-in	^[^,]*,[^,]*,([^,]+)

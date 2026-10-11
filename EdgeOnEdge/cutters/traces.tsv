@@ -1,0 +1,14 @@
+#! scope traces@6
+#! vocabulary IT
+#! <NOUN> trace-log hint trace ip route
+#! <VERB> at source route hop
+# Traceroutes, one per entry:   2026-09-18T10:02:11 trace from 10.2.14.7: 10.2.14.7 10.2.0.1 192.0.2.9
+# The route is its own exact text, so it can be joined on; its hops are parts of it.
+# on	id	tags	regex
+file	hint	hint	^eoe: trace-log$
+file	trace-log	trace-log	(?<=^eoe: trace-log\n)[\s\S]+
+trace-log	trace	trace	^.+$
+trace	-	at	^(\S+)
+trace	ip	ip source	trace from (\S+):
+trace	route	route	: (.+)$
+route	ip	ip hop	\S+

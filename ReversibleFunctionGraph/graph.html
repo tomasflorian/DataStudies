@@ -1,0 +1,172 @@
+<!doctype html>
+<!--
+  graph.html — the page. Markup and styles only; the behaviour is viewer.ts.
+
+  THE PAGE BUILDS THE GRAPH ITSELF. It reads the pile through a read-only
+  adapter, receives one atom per line, and runs `expand` over them. Nothing
+  sends it a graph. Atoms are expanded independently because
+  `expand` never consults the graph built so far. See expand.ts, serve.ts and the
+  README.
+
+  Served by the optional read-only serve.ts adapter. `npm run build` once,
+  `npm start`, then http://localhost:8000.
+
+  Two tabs, two questions. `triples` asks what a node is, from the graph's own
+  side. `walk` builds a table by walking outward from an anchor — see walk.ts and
+  the README. Every reading happens where you are looking at it; nothing is
+  precomputed and shipped.
+
+  Edges are UNLABELED (direction only). Meaning shows through node color, by
+  role — value / function / application. The legend names the three.
+-->
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>RFG2 graph</title>
+  <script src="https://unpkg.com/vis-network@9/standalone/umd/vis-network.min.js"></script>
+  <!-- viewer.ts (and expand.ts, walk.ts through it), compiled by
+       `npm run build`. Loaded at the end of the body. -->
+  <style>
+    html, body { margin: 0; height: 100%; background: #111; font: 13px sans-serif; }
+
+    /* split screen: graph left, detail right */
+    #app  { display: flex; height: 100%; }
+    #left { position: relative; width: 34%; height: 100%; border-right: 1px solid #333;
+            display: flex; flex-direction: column; gap: 8px; padding: 10px; box-sizing: border-box;
+            color: #ddd; }
+    #sources .row { display: flex; gap: 12px; align-items: center; }
+    #sources label { cursor: pointer; }
+    #paste { flex: 1; width: 100%; box-sizing: border-box; resize: none;
+             background: #0d0d0d; color: #ddd; border: 1px solid #333; border-radius: 6px;
+             padding: 8px; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    #net  { flex: 1; min-height: 0; }
+    #netbar { padding: 6px 12px 10px; border-top: 1px solid #222; }
+    #detail { width: 66%; height: 100%; display: flex; flex-direction: column;
+              color: #ddd; box-sizing: border-box; }
+    #tabs { display: flex; gap: 4px; padding: 10px 12px 0; border-bottom: 1px solid #333; }
+    #tabs .tab { background: none; border: none; color: #888; cursor: pointer;
+                 font: 13px sans-serif; padding: 8px 14px; border-radius: 6px 6px 0 0; }
+    #tabs .tab:hover { color: #ddd; }
+    #tabs .tab.on { color: #fff; background: #222; border-bottom: 2px solid #dd6b20; }
+    #view { flex: 1; overflow: auto; padding: 16px 18px; }
+
+    #empty { color: #888; padding: 1rem; }
+    #legend {
+      position: absolute; top: 12px; left: 12px; z-index: 10; color: #ddd;
+      background: rgba(0,0,0,.55); padding: 10px 12px; border-radius: 8px;
+      line-height: 1.9;
+    }
+    #legend .row { display: flex; align-items: center; gap: 8px; }
+    #legend .dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+    #multi {
+      position: absolute; top: 12px; right: 12px; z-index: 10;
+      background: #2a2a2a; color: #ddd; border: 1px solid #555;
+      padding: 8px 12px; border-radius: 8px; font: 13px sans-serif; cursor: pointer;
+    }
+    #multi.on { background: #dd6b20; color: #fff; border-color: #dd6b20; }
+
+    /* detail pane */
+    #detail .head { font-size: 15px; display: flex; align-items: center; gap: 8px; }
+    #detail .role { color: #888; font-size: 12px; }
+    #detail h3 { font-size: 11px; color: #999; text-transform: uppercase;
+                 letter-spacing: .05em; margin: 18px 0 6px; }
+    #detail ul { list-style: none; margin: 0; padding: 0; }
+    #detail li { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+    #detail .node { display: inline-flex; align-items: center; gap: 6px;
+                    padding: 4px 8px; border-radius: 6px; cursor: pointer; }
+    #detail .node:hover { background: #222; }
+    #detail .arrow { color: #666; }
+    #detail .dot { width: 11px; height: 11px; border-radius: 3px; flex: none; }
+    #detail .hint, #detail .empty { color: #666; font-style: italic; padding: 4px 8px; }
+
+    /* pivot table (Shape A: subject × function) */
+    .tablewrap { overflow: auto; }
+    .tbl-block { margin: 8px 0 22px; }
+    .tbl-block h3 { color: #dd6b20; }
+    .pathrow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+               padding: 6px 0; border-bottom: 1px solid #1e1e1e; }
+    .pathrow.selrow { background: #2a2216; border-radius: 6px; }
+    .tip .node { outline: 1px solid #dd6b20; }
+    .listing { padding: 6px 0; border-bottom: 1px solid #1e1e1e; border-radius: 6px; }
+    .listing .lfrom { color: #888; }
+    .listing .litems { display: flex; flex-wrap: wrap; gap: 4px; padding-left: 18px; }
+    .node.static { cursor: default; }
+    .node.static:hover { background: none; }
+    .morebtn { margin-top: 12px; background: #2a2a2a; color: #ddd; border: 1px solid #555;
+               padding: 7px 12px; border-radius: 6px; cursor: pointer; font: 13px sans-serif; }
+    .morebtn:hover { border-color: #dd6b20; color: #fff; }
+    /* A step on the walk menu is offered for the whole column. These say whether
+       the cell you actually clicked can take it: `here` goes somewhere from the
+       value in front of you, `there` goes somewhere for other rows and will
+       write `?` on yours. Colour only — both are equally tickable. */
+    .morebtn.here  { border-color: #2b6cb0; color: #fff; }
+    .morebtn.there { border-color: #3a3a3a; color: #777; background: #202020; }
+    table { border-collapse: collapse; font-size: 12px; }
+    th, td { border: 1px solid #2c2c2c; padding: 4px 8px; text-align: left; }
+    th { white-space: nowrap; }
+    /* A value may be a page of text. Newlines in it are content, so they are
+       shown; nothing is abbreviated and nothing is hidden behind a scroller.
+       vertical-align keeps short cells level with the tall one beside them. */
+    td { white-space: pre-wrap; vertical-align: top; }
+    thead th { position: sticky; top: 0; background: #1a1a1a; color: #999;
+               font-weight: normal; z-index: 1; }
+    th.rowh { position: sticky; left: 0; background: #1a1a1a; z-index: 1; }
+    td.blank { background: #161616; }
+    tr.selrow th.rowh, tr.selrow td { background: #2a2216; } /* selected row tint */
+    .cell { display: inline-block; padding: 2px 6px; border-radius: 5px; cursor: pointer; }
+    .cell:hover { background: #222; }
+    .cell.hot { background: #dd6b20; color: #fff; } /* cells whose result == selection */
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- LEFT: where atoms come from. The graph used to live here; it is a tab now
+         (see #tabs) and is not built until you open it. -->
+    <div id="left">
+      <div id="sources">
+        <div class="head">atoms from</div>
+        <div class="row">
+          <label><input type="radio" name="src" value="server"> the pile</label>
+          <label><input type="radio" name="src" value="pasted"> pasted</label>
+          <label><input type="radio" name="src" value="both"> both</label>
+        </div>
+        <div id="srcstat" class="hint"></div>
+      </div>
+      <textarea id="paste" spellcheck="false"
+        placeholder='One atom per line:&#10;["length","cat","3"]&#10;["upper","cat","CAT"]'></textarea>
+      <div class="row">
+        <button class="morebtn" id="load">load pasted</button>
+        <button class="morebtn" id="clearpaste">clear</button>
+        <span id="pastestat" class="hint"></span>
+      </div>
+      <div id="empty" class="hint" style="display:none">
+        Nothing in the pile, and nothing pasted. Start the pile with <code>npm start</code>
+        and send it something, or paste atoms above.
+      </div>
+    </div>
+
+    <div id="detail">
+      <div id="tabs">
+        <button class="tab on" data-view="walk">walk</button>
+        <button class="tab" data-view="triples">triples</button>
+        <button class="tab" data-view="graph">graph</button>
+      </div>
+      <div id="view"></div>
+      <!-- The picture. Outside #view because vis-network owns this element and
+           must not have it rebuilt underneath it; shown only on the graph tab. -->
+      <div id="net" style="display:none"></div>
+      <div id="netbar" style="display:none">
+        <button class="morebtn" id="multi">multi-select: off</button>
+        <!-- Drawing only. The whole value is still the node, still in the detail
+             pane, still in the table. See viewer.ts, "shortening". -->
+        <label class="hint" style="margin-right:8px"><input type="checkbox" id="shorten" checked> shorten labels</label>
+        <span class="hint">arrows pan · <code>]</code> zoom in · <code>[</code> zoom out ·
+          <span class="dot" style="background:#2b6cb0"></span>value
+          <span class="dot" style="background:#805ad5"></span>function
+          <span class="dot" style="background:#dd6b20"></span>call</span>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="dist/viewer.js"></script>
+</body>
+</html>

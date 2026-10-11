@@ -1,0 +1,15 @@
+#! scope greenhouse@6
+#! vocabulary gardening
+#! <NOUN> greenhouse-config hint controller host ip watering flower
+#! <VERB> name address waters from
+# A greenhouse controller's config. A gardening file with one machine in it:
+# the controller entry is written in IT.
+# on	id	tags	regex
+file	hint	hint	^eoe: greenhouse-config$
+file	greenhouse-config	greenhouse-config	(?<=^eoe: greenhouse-config\n)[\s\S]+
+greenhouse-config	controller	controller @IT	^controller .+$
+controller	host	host name @IT	^controller (\S+)
+controller	ip	ip address @IT	^controller \S+ (\S+)$
+greenhouse-config	watering	watering	^water .+$
+watering	flower	flower waters	"(.+)"
+watering	host	host from	from (\S+)$

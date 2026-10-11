@@ -1,0 +1,552 @@
+{
+  "version": 1,
+  "limit": 14,
+  "nodes": [
+    "10.2.14.7    b",
+    "#10.2.14.7~esr",
+    "10.2.14.7",
+    "#backup-03~811",
+    "backup-03",
+    "#backup-03~2zr",
+    "backup-03.corp",
+    "# corp hosts, ",
+    "#10.2.14.7~tmo",
+    "#~lwl",
+    "#address~qhr",
+    "hosts@6",
+    "#~eh6",
+    "#ip~52y",
+    "#~ua3",
+    "10.2.14.7    b",
+    "#10.2.14.7~kng",
+    "10.2.14.7 10.2",
+    "#10.2.14.7~sai",
+    "2026-09-18T10:",
+    "#10.2.14.7~5ie",
+    "#~8dx",
+    "#alias~a48",
+    "#~wxx",
+    "#host~tpu",
+    "#~qdp",
+    "Sep 18 03:12:0",
+    "#backup-03~5pb",
+    "#~v2l",
+    "#~2rx",
+    "#name~koz",
+    "#~7qf",
+    "#backup-03~yhr",
+    "Sep 18 04:00:0",
+    "#backup-03~vti",
+    "backup-03.corp",
+    "#backup-03~ef6",
+    "#10.2.14.2~zpv",
+    "10.2.14.20   b",
+    "#10.2.14.7~erh",
+    "#10.2.14.9~p75",
+    "10.2.14.9    b",
+    "#~a4b",
+    "#hosts-ent~7n4",
+    "#~g93",
+    "#~mgl",
+    "#10.2.14.7~yqy",
+    "<VERB>",
+    "#~n65",
+    "#~bx3",
+    "#~1en",
+    "#~xij",
+    "#~klh",
+    "#~m8t",
+    "#203.0.113~jp7",
+    "#~zzb",
+    "#10.2.14.9~xqf",
+    "#~txw",
+    "#10.2.14.9~sx0",
+    "#~zf0",
+    "#~5mr",
+    "#~29n",
+    "Sep 18 09:02:4",
+    "#10.2.14.7~s34",
+    "#10.2.0.1~cek",
+    "10.2.0.1"
+  ],
+  "blocks": [
+    {
+      "id": 1,
+      "direction": "h",
+      "parent": null,
+      "nodes": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "id": 2,
+      "direction": "v",
+      "parent": 1,
+      "parentSlot": 0,
+      "ownSlot": 0,
+      "nodes": [
+        0,
+        3,
+        4
+      ]
+    },
+    {
+      "id": 3,
+      "direction": "v",
+      "parent": 1,
+      "parentSlot": 0,
+      "ownSlot": 0,
+      "nodes": [
+        0,
+        5,
+        6
+      ]
+    },
+    {
+      "id": 4,
+      "direction": "h",
+      "parent": 1,
+      "parentSlot": 0,
+      "ownSlot": 2,
+      "nodes": [
+        7,
+        8,
+        0
+      ]
+    },
+    {
+      "id": 5,
+      "direction": "v",
+      "parent": 1,
+      "parentSlot": 1,
+      "ownSlot": 0,
+      "nodes": [
+        1,
+        9,
+        10
+      ]
+    },
+    {
+      "id": 6,
+      "direction": "v",
+      "parent": 1,
+      "parentSlot": 1,
+      "ownSlot": 2,
+      "nodes": [
+        11,
+        12,
+        1
+      ]
+    },
+    {
+      "id": 7,
+      "direction": "v",
+      "parent": 1,
+      "parentSlot": 1,
+      "ownSlot": 2,
+      "nodes": [
+        13,
+        14,
+        1
+      ]
+    },
+    {
+      "id": 8,
+      "direction": "v",
+      "parent": 1,
+      "parentSlot": 2,
+      "ownSlot": 2,
+      "nodes": [
+        15,
+        16,
+        2
+      ]
+    },
+    {
+      "id": 9,
+      "direction": "v",
+      "parent": 1,
+      "parentSlot": 2,
+      "ownSlot": 2,
+      "nodes": [
+        17,
+        18,
+        2
+      ]
+    },
+    {
+      "id": 10,
+      "direction": "v",
+      "parent": 1,
+      "parentSlot": 2,
+      "ownSlot": 2,
+      "nodes": [
+        19,
+        20,
+        2
+      ]
+    },
+    {
+      "id": 11,
+      "direction": "h",
+      "parent": 2,
+      "parentSlot": 1,
+      "ownSlot": 0,
+      "nodes": [
+        3,
+        21,
+        22
+      ]
+    },
+    {
+      "id": 12,
+      "direction": "h",
+      "parent": 2,
+      "parentSlot": 1,
+      "ownSlot": 0,
+      "nodes": [
+        3,
+        23,
+        24
+      ]
+    },
+    {
+      "id": 13,
+      "direction": "h",
+      "parent": 2,
+      "parentSlot": 1,
+      "ownSlot": 2,
+      "nodes": [
+        11,
+        25,
+        3
+      ]
+    },
+    {
+      "id": 14,
+      "direction": "h",
+      "parent": 2,
+      "parentSlot": 2,
+      "ownSlot": 2,
+      "nodes": [
+        26,
+        27,
+        4
+      ]
+    },
+    {
+      "id": 15,
+      "direction": "h",
+      "parent": 3,
+      "parentSlot": 1,
+      "ownSlot": 0,
+      "nodes": [
+        5,
+        28,
+        24
+      ]
+    },
+    {
+      "id": 16,
+      "direction": "h",
+      "parent": 3,
+      "parentSlot": 1,
+      "ownSlot": 2,
+      "nodes": [
+        11,
+        29,
+        5
+      ]
+    },
+    {
+      "id": 17,
+      "direction": "h",
+      "parent": 3,
+      "parentSlot": 1,
+      "ownSlot": 2,
+      "nodes": [
+        30,
+        31,
+        5
+      ]
+    },
+    {
+      "id": 18,
+      "direction": "h",
+      "parent": 3,
+      "parentSlot": 2,
+      "ownSlot": 2,
+      "nodes": [
+        15,
+        32,
+        6
+      ]
+    },
+    {
+      "id": 19,
+      "direction": "h",
+      "parent": 3,
+      "parentSlot": 2,
+      "ownSlot": 2,
+      "nodes": [
+        33,
+        34,
+        6
+      ]
+    },
+    {
+      "id": 20,
+      "direction": "h",
+      "parent": 3,
+      "parentSlot": 2,
+      "ownSlot": 2,
+      "nodes": [
+        35,
+        36,
+        6
+      ]
+    },
+    {
+      "id": 21,
+      "direction": "v",
+      "parent": 4,
+      "parentSlot": 0,
+      "ownSlot": 0,
+      "nodes": [
+        7,
+        37,
+        38
+      ]
+    },
+    {
+      "id": 22,
+      "direction": "v",
+      "parent": 4,
+      "parentSlot": 0,
+      "ownSlot": 0,
+      "nodes": [
+        7,
+        39,
+        15
+      ]
+    },
+    {
+      "id": 23,
+      "direction": "v",
+      "parent": 4,
+      "parentSlot": 0,
+      "ownSlot": 0,
+      "nodes": [
+        7,
+        40,
+        41
+      ]
+    },
+    {
+      "id": 24,
+      "direction": "v",
+      "parent": 4,
+      "parentSlot": 1,
+      "ownSlot": 0,
+      "nodes": [
+        8,
+        42,
+        43
+      ]
+    },
+    {
+      "id": 25,
+      "direction": "v",
+      "parent": 4,
+      "parentSlot": 1,
+      "ownSlot": 2,
+      "nodes": [
+        11,
+        44,
+        8
+      ]
+    },
+    {
+      "id": 26,
+      "direction": "v",
+      "parent": 5,
+      "parentSlot": 2,
+      "ownSlot": 0,
+      "nodes": [
+        10,
+        45,
+        46
+      ]
+    },
+    {
+      "id": 27,
+      "direction": "h",
+      "parent": 5,
+      "parentSlot": 2,
+      "ownSlot": 2,
+      "nodes": [
+        47,
+        48,
+        10
+      ]
+    },
+    {
+      "id": 28,
+      "direction": "h",
+      "parent": 5,
+      "parentSlot": 2,
+      "ownSlot": 2,
+      "nodes": [
+        13,
+        49,
+        10
+      ]
+    },
+    {
+      "id": 29,
+      "direction": "h",
+      "parent": 6,
+      "parentSlot": 0,
+      "ownSlot": 0,
+      "nodes": [
+        11,
+        50,
+        39
+      ]
+    },
+    {
+      "id": 30,
+      "direction": "h",
+      "parent": 6,
+      "parentSlot": 0,
+      "ownSlot": 0,
+      "nodes": [
+        11,
+        51,
+        40
+      ]
+    },
+    {
+      "id": 31,
+      "direction": "h",
+      "parent": 6,
+      "parentSlot": 0,
+      "ownSlot": 0,
+      "nodes": [
+        11,
+        52,
+        32
+      ]
+    },
+    {
+      "id": 32,
+      "direction": "h",
+      "parent": 7,
+      "parentSlot": 0,
+      "ownSlot": 0,
+      "nodes": [
+        13,
+        53,
+        54
+      ]
+    },
+    {
+      "id": 33,
+      "direction": "h",
+      "parent": 7,
+      "parentSlot": 0,
+      "ownSlot": 0,
+      "nodes": [
+        13,
+        55,
+        56
+      ]
+    },
+    {
+      "id": 34,
+      "direction": "h",
+      "parent": 7,
+      "parentSlot": 0,
+      "ownSlot": 0,
+      "nodes": [
+        13,
+        57,
+        58
+      ]
+    },
+    {
+      "id": 35,
+      "direction": "h",
+      "parent": 8,
+      "parentSlot": 1,
+      "ownSlot": 0,
+      "nodes": [
+        16,
+        59,
+        10
+      ]
+    },
+    {
+      "id": 36,
+      "direction": "h",
+      "parent": 8,
+      "parentSlot": 1,
+      "ownSlot": 2,
+      "nodes": [
+        11,
+        60,
+        16
+      ]
+    },
+    {
+      "id": 37,
+      "direction": "h",
+      "parent": 8,
+      "parentSlot": 1,
+      "ownSlot": 2,
+      "nodes": [
+        13,
+        61,
+        16
+      ]
+    },
+    {
+      "id": 38,
+      "direction": "h",
+      "parent": 8,
+      "parentSlot": 2,
+      "ownSlot": 2,
+      "nodes": [
+        62,
+        63,
+        2
+      ]
+    },
+    {
+      "id": 39,
+      "direction": "h",
+      "parent": 8,
+      "parentSlot": 2,
+      "ownSlot": 2,
+      "nodes": [
+        35,
+        46,
+        2
+      ]
+    },
+    {
+      "id": 40,
+      "direction": "h",
+      "parent": 9,
+      "parentSlot": 0,
+      "ownSlot": 0,
+      "nodes": [
+        17,
+        64,
+        65
+      ]
+    }
+  ]
+}

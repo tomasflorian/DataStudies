@@ -1,0 +1,8 @@
+# How a gardener walks the pile. Picking it opens the gardener's own words; every other
+# language stays closed until switched on, and can still be stepped into whole.
+
+alias flower         = variety
+alias submitted-from = ordered from
+alias ordered-by     = ordered by
+alias ships-to       = ships to
+alias bred-in        = bred in

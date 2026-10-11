@@ -1,0 +1,9 @@
+#! hint	syslog
+# A syslog:   Sep 18 09:02:44 build-01 sshd[1290]: Accepted password for tomas from 10.2.14.7 port 60211
+# on	label	function
+file	entry	/^(?!eoe:).+$/
+------
+entry	host	/^\w+ +\d+ [\d:]+ (\S+) /
+entry	program	/^(?:\S+ +){4}([^\[:\s]+)/
+entry	user	/: .* for (\S+) from /
+entry	ip	/ from (\S+)/

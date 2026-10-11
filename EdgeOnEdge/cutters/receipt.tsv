@@ -1,0 +1,19 @@
+#! scope receipt@6
+#! vocabulary gardening
+#! <NOUN> receipt hint shop url person host place item plant flower
+#! <VERB> sold-by sold-at order ordered-by submitted-from ships-to item quantity kind variety
+# A nursery receipt. The whole receipt is one text; what it says is found straight in it,
+# and each item is a whole of its own: how many, what plant, which variety.
+# on	id	tags	regex
+file	hint	hint	^eoe: receipt$
+file	receipt	receipt	(?<=^eoe: receipt\n)[\s\S]+
+receipt	shop	shop sold-by	^([A-Z][A-Z ]+)$
+receipt	url	url sold-at	^(https?://\S+)$
+receipt	-	order	^order (\S+)$
+receipt	person	person ordered-by	^ordered by (\S+)$
+receipt	host	host submitted-from	^submitted from (\S+)$
+receipt	place	place ships-to	^ship to (.+)$
+receipt	item	item	^\d+x .+$
+item	-	quantity	^(\d+)x
+item	plant	plant kind	^\d+x (\S+)
+item	flower	flower variety	^\d+x \S+ (.+)$

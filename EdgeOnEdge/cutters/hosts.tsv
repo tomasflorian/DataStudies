@@ -1,0 +1,12 @@
+#! scope hosts@6
+#! vocabulary IT
+#! <NOUN> hosts-file hint hosts-entry ip host
+#! <VERB> address name alias
+# An /etc/hosts file:   10.2.14.7    backup-03.corp   backup-03
+# on	id	tags	regex
+file	hint	hint	^eoe: hosts-file$
+file	hosts-file	hosts-file	(?<=^eoe: hosts-file\n)[\s\S]+
+hosts-file	hosts-entry	hosts-entry	^[^#\s].*$
+hosts-entry	ip	ip address	^(\S+)
+hosts-entry	host	host name	^\S+\s+(\S+)
+hosts-entry	host	host alias	(?<=^\S+\s+\S+\s+(?:\S+\s+)*)(\S+)

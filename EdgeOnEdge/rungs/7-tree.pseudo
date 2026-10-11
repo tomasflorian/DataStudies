@@ -1,0 +1,26 @@
+RUNG 7 — tree: literally everything around a string
+  Every line touching it, either side, then what touches those. No markers: contains,
+  words, tower and sources are all just lines. Shows how fast the raw graph explodes.
+
+  usage:  7-tree tomas FILE.eoe ...
+          7-tree tomas --depth=3 --wide=100 FILE.eoe ...
+
+  → x   a line from here to x        ← x   a line from x to here
+  ~ x   a line about the line above  left/right   a reference, unfolded
+  ↺     already shown; not grown again
+
+branches(node):
+    if node names a line:  its left end, its right end
+    for each line touching node:
+        the other end                          marked → or ←
+        for each line about that line:  its other end, marked ~
+
+grow(node, depth):
+    kept = first --wide (12) branches
+    mark every kept branch as shown before growing any    (things grow nearest the root)
+    for each kept branch:
+        print it, with ↺ if it was already shown
+        if newly shown and depth < --depth (2):  grow(branch, depth + 1)
+    if some were cut:  print "… N more"
+
+print the string, then grow(string, 1)

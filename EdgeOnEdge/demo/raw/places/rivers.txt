@@ -1,0 +1,5 @@
+eoe: prose
+paris sits on the seine
+tokyo sits on the sumida
+
+a city is a place

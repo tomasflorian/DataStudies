@@ -1,0 +1,3 @@
+["10.2.14.7","ip, resolves-to, has-address, host","backup-03.corp"]
+["10.2.14.9","ip, resolves-to, has-address, host","web-01.corp"]
+["10.9.0.4","ip, resolves-to, has-address, host","mail-01.corp"]

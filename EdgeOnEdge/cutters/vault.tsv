@@ -1,0 +1,21 @@
+#! scope vault@4
+#! vocabulary IT
+#! <NOUN> vault-export hint vault-record company year account password vault-note
+#! <VERB> id company year username password notes
+# A password manager's export. A record is its header line and the lines under it; a
+# line starting with @@@ carries the field above onto another line.
+#   PasswordRecord:1
+#       Username:svc-deploy
+#       Notes:BitLocker recovery key
+#   @@@a second line of the note
+# A note is not cut further: whatever it says stays readable in it.
+# on	id	tags	regex
+file	hint	hint	^eoe: vault-export$
+file	vault-export	vault-export	(?<=^eoe: vault-export\n)[\s\S]+
+vault-export	vault-record	vault-record	^PasswordRecord:\d+(?:\n(?:[ \t]|@@@).*)*
+vault-record	-	id	^(PasswordRecord:\d+)$
+vault-record	company	company	^\s+Company:(.+)$
+vault-record	year	year	^\s+Year:(.+)$
+vault-record	account	account username	^\s+Username:(.+)$
+vault-record	password	password	^\s+Password:(.+)$
+vault-record	vault-note	vault-note notes	^\s+Notes:(.*(?:\n@@@.*)*)

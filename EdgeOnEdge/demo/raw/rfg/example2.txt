@@ -1,0 +1,170 @@
+eoe: vault-export
+PasswordRecord:61
+    Username:ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHq2ExampleKeyMaterial9wZ alice@workstation
+    Password:summer2016
+    Year:2016
+    Company:Home
+    Notes:id_password_protected
+PasswordRecord:62
+    Username:laptop bitlocker recovery key
+    Notes:BitLocker\ Recovery\ Key\ 4C1F2A9E.TXT 
+@@@﻿BitLocker Drive Encryption recovery key
+@@@
+@@@To verify that this is the correct recovery key, compare the start of the following identifier with the identifier value displayed on your PC.
+@@@
+@@@Identifier:
+@@@
+@@@    4C1F2A9E-77B3-4D05-9E61-2AB8C4F0D913
+@@@
+@@@If the above identifier matches the one displayed by your PC, then use the following key to unlock your drive.
+@@@
+@@@Recovery Key:
+@@@
+@@@    448291-036714-592038-117465-880253-604197-329586-741029
+@@@
+@@@If the above identifier doesn't match the one displayed by your PC, then this isn't the right key to unlock your drive.
+@@@Try another recovery key, or refer to https://go.microsoft.com/fwlink/?LinkID=260589 for additional assistance.
+@@@
+PasswordRecord:73
+    Year:2016
+    Company:Home
+    Notes:((
+@@@alice@larkfield.example private key
+@@@certglade
+@@@alice_larkfield.pfx
+@@@
+@@@Revocation revoke2016
+@@@
+@@@
+@@@unlock private key: certglade2016
+@@@
+@@@
+@@@))
+PasswordRecord:74
+    Username:brightcast@larkfield.example
+    Password:paris
+    Year:2016
+    Company:Home
+    Notes:((
+@@@
+@@@bright cast
+@@@
+@@@
+@@@
+@@@))
+PasswordRecord:75
+    Username:orbit447
+    Password:summer2016
+    Year:2016
+    Company:Home
+    Notes:((
+@@@pixvault@larkfield.example
+@@@
+@@@pixvault login
+@@@
+@@@
+@@@
+@@@
+@@@
+@@@
+@@@))
+PasswordRecord:76
+    Username:robert@ridgeway.example
+    Year:2016
+    Company:Ridgeway
+    Notes:((
+@@@voip sip trunks
+@@@voip
+@@@https://voipline.example/   voip2016
+@@@flow gate
+@@@https://flowgate.example  summer2016
+@@@calltide
+@@@https://calltide.example  Kp9mVt2Xz7Lq4Rb
+@@@
+@@@
+@@@
+@@@
+@@@))
+PasswordRecord:77
+    Username:admin
+    Password:admin
+    Year:2016
+    Company:Meridian
+    Notes:((
+@@@
+@@@
+@@@pfsense
+@@@10.20.30.1
+@@@
+@@@))
+PasswordRecord:78
+    Company:Home
+    Notes:((
+@@@bike serial number supercycle cc1800 26 inch
+@@@SC1800-4471902
+@@@
+@@@
+@@@
+@@@))
+PasswordRecord:79
+    Year:2016
+    Company:Home
+    Notes:((
+@@@canary tokens
+@@@cn-7f3a91b2e4d6  C:\Users\alice\Desktop\secrets.docx
+@@@
+@@@cn-9d1c65b3e802  custom app
+@@@
+@@@
+@@@))
+PasswordRecord:80
+    Username:robert
+    Password:x7Qv2mKp9RfL4wZs1TjHb8Nd
+    Year:2016
+    Company:Ridgeway
+    Notes:((
+@@@
+@@@robert@203.0.113.42 
+@@@ssh web2
+@@@/MEDIA/ridgeway.example/dev_fon.ridgeway/
+@@@
+@@@web daemon
+@@@
+@@@
+@@@))
+PasswordRecord:81
+    Username:Alice-hyperv
+    Password:qN4tYb7Lm2Rk9Wz5Fp0Xc6Ve
+    Year:2016
+    Company:Meridian
+    Notes:((
+@@@10.20.30.2
+@@@hyper-v
+@@@
+@@@
+@@@login to 204 first
+@@@(way to login to ossec through hyperv)
+@@@))
+PasswordRecord:82
+    Username:alice@northgate.example
+    Password:Hs3vQ8xLpT1mZ6yRb4Kd9Nwc
+    Year:2016
+    Company:Northgate
+    Notes:((
+@@@
+@@@
+@@@
+@@@
+@@@
+@@@))
+PasswordRecord:83
+    Username:alice.l@quillspec.example
+    Password:Vb2nMk7Ct4Xq9Zr6Lp3Hs8Fd
+    Company:Quillspec
+    Notes:((
+@@@
+@@@voipline.example $17 remaining
+@@@
+@@@
+@@@
+@@@))

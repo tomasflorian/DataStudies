@@ -1,0 +1,1433 @@
+{
+  "schemaVersion": 1,
+  "input": "thecatwasoldandhappy",
+  "requestedCycles": 6,
+  "minDegree": 2,
+  "stopReason": "max-cycles",
+  "cyclesRun": 6,
+  "cycles": [
+    {
+      "cycle": 0,
+      "stream": [
+        {
+          "id": "^",
+          "text": "^",
+          "start": 0,
+          "end": 0
+        },
+        {
+          "id": "t",
+          "text": "t",
+          "start": 0,
+          "end": 1
+        },
+        {
+          "id": "h",
+          "text": "h",
+          "start": 1,
+          "end": 2
+        },
+        {
+          "id": "e",
+          "text": "e",
+          "start": 2,
+          "end": 3
+        },
+        {
+          "id": "c",
+          "text": "c",
+          "start": 3,
+          "end": 4
+        },
+        {
+          "id": "a",
+          "text": "a",
+          "start": 4,
+          "end": 5
+        },
+        {
+          "id": "t",
+          "text": "t",
+          "start": 5,
+          "end": 6
+        },
+        {
+          "id": "w",
+          "text": "w",
+          "start": 6,
+          "end": 7
+        },
+        {
+          "id": "a",
+          "text": "a",
+          "start": 7,
+          "end": 8
+        },
+        {
+          "id": "s",
+          "text": "s",
+          "start": 8,
+          "end": 9
+        },
+        {
+          "id": "o",
+          "text": "o",
+          "start": 9,
+          "end": 10
+        },
+        {
+          "id": "l",
+          "text": "l",
+          "start": 10,
+          "end": 11
+        },
+        {
+          "id": "d",
+          "text": "d",
+          "start": 11,
+          "end": 12
+        },
+        {
+          "id": "a",
+          "text": "a",
+          "start": 12,
+          "end": 13
+        },
+        {
+          "id": "n",
+          "text": "n",
+          "start": 13,
+          "end": 14
+        },
+        {
+          "id": "d",
+          "text": "d",
+          "start": 14,
+          "end": 15
+        },
+        {
+          "id": "h",
+          "text": "h",
+          "start": 15,
+          "end": 16
+        },
+        {
+          "id": "a",
+          "text": "a",
+          "start": 16,
+          "end": 17
+        },
+        {
+          "id": "p",
+          "text": "p",
+          "start": 17,
+          "end": 18
+        },
+        {
+          "id": "p",
+          "text": "p",
+          "start": 18,
+          "end": 19
+        },
+        {
+          "id": "y",
+          "text": "y",
+          "start": 19,
+          "end": 20
+        }
+      ],
+      "currentEdges": [
+        "^->t",
+        "a->n",
+        "a->p",
+        "a->s",
+        "a->t",
+        "c->a",
+        "d->a",
+        "d->h",
+        "e->c",
+        "h->a",
+        "h->e",
+        "l->d",
+        "n->d",
+        "o->l",
+        "p->p",
+        "p->y",
+        "s->o",
+        "t->h",
+        "t->w",
+        "w->a"
+      ],
+      "accumulatedEdges": [
+        "^->t",
+        "a->n",
+        "a->p",
+        "a->s",
+        "a->t",
+        "c->a",
+        "d->a",
+        "d->h",
+        "e->c",
+        "h->a",
+        "h->e",
+        "l->d",
+        "n->d",
+        "o->l",
+        "p->p",
+        "p->y",
+        "s->o",
+        "t->h",
+        "t->w",
+        "w->a"
+      ],
+      "outgoingDegrees": {
+        "^": 1,
+        "a": 4,
+        "c": 1,
+        "d": 2,
+        "e": 1,
+        "h": 2,
+        "l": 1,
+        "n": 1,
+        "o": 1,
+        "p": 2,
+        "s": 1,
+        "t": 2,
+        "w": 1
+      },
+      "selected": [
+        "a"
+      ],
+      "created": [
+        {
+          "id": "ca",
+          "text": "ca",
+          "left": {
+            "id": "c",
+            "text": "c",
+            "start": 3,
+            "end": 4
+          },
+          "right": {
+            "id": "a",
+            "text": "a",
+            "start": 4,
+            "end": 5
+          }
+        },
+        {
+          "id": "wa",
+          "text": "wa",
+          "left": {
+            "id": "w",
+            "text": "w",
+            "start": 6,
+            "end": 7
+          },
+          "right": {
+            "id": "a",
+            "text": "a",
+            "start": 7,
+            "end": 8
+          }
+        },
+        {
+          "id": "da",
+          "text": "da",
+          "left": {
+            "id": "d",
+            "text": "d",
+            "start": 11,
+            "end": 12
+          },
+          "right": {
+            "id": "a",
+            "text": "a",
+            "start": 12,
+            "end": 13
+          }
+        },
+        {
+          "id": "ha",
+          "text": "ha",
+          "left": {
+            "id": "h",
+            "text": "h",
+            "start": 15,
+            "end": 16
+          },
+          "right": {
+            "id": "a",
+            "text": "a",
+            "start": 16,
+            "end": 17
+          }
+        }
+      ]
+    },
+    {
+      "cycle": 1,
+      "stream": [
+        {
+          "id": "^",
+          "text": "^",
+          "start": 0,
+          "end": 0
+        },
+        {
+          "id": "t",
+          "text": "t",
+          "start": 0,
+          "end": 1
+        },
+        {
+          "id": "h",
+          "text": "h",
+          "start": 1,
+          "end": 2
+        },
+        {
+          "id": "e",
+          "text": "e",
+          "start": 2,
+          "end": 3
+        },
+        {
+          "id": "ca",
+          "text": "ca",
+          "start": 3,
+          "end": 5
+        },
+        {
+          "id": "t",
+          "text": "t",
+          "start": 5,
+          "end": 6
+        },
+        {
+          "id": "wa",
+          "text": "wa",
+          "start": 6,
+          "end": 8
+        },
+        {
+          "id": "s",
+          "text": "s",
+          "start": 8,
+          "end": 9
+        },
+        {
+          "id": "o",
+          "text": "o",
+          "start": 9,
+          "end": 10
+        },
+        {
+          "id": "l",
+          "text": "l",
+          "start": 10,
+          "end": 11
+        },
+        {
+          "id": "da",
+          "text": "da",
+          "start": 11,
+          "end": 13
+        },
+        {
+          "id": "n",
+          "text": "n",
+          "start": 13,
+          "end": 14
+        },
+        {
+          "id": "d",
+          "text": "d",
+          "start": 14,
+          "end": 15
+        },
+        {
+          "id": "ha",
+          "text": "ha",
+          "start": 15,
+          "end": 17
+        },
+        {
+          "id": "p",
+          "text": "p",
+          "start": 17,
+          "end": 18
+        },
+        {
+          "id": "p",
+          "text": "p",
+          "start": 18,
+          "end": 19
+        },
+        {
+          "id": "y",
+          "text": "y",
+          "start": 19,
+          "end": 20
+        }
+      ],
+      "currentEdges": [
+        "^->t",
+        "ca->t",
+        "d->ha",
+        "da->n",
+        "e->ca",
+        "h->e",
+        "ha->p",
+        "l->da",
+        "n->d",
+        "o->l",
+        "p->p",
+        "p->y",
+        "s->o",
+        "t->h",
+        "t->wa",
+        "wa->s"
+      ],
+      "accumulatedEdges": [
+        "^->t",
+        "a->n",
+        "a->p",
+        "a->s",
+        "a->t",
+        "c->a",
+        "ca->t",
+        "d->a",
+        "d->h",
+        "d->ha",
+        "da->n",
+        "e->c",
+        "e->ca",
+        "h->a",
+        "h->e",
+        "ha->p",
+        "l->d",
+        "l->da",
+        "n->d",
+        "o->l",
+        "p->p",
+        "p->y",
+        "s->o",
+        "t->h",
+        "t->w",
+        "t->wa",
+        "w->a",
+        "wa->s"
+      ],
+      "outgoingDegrees": {
+        "^": 1,
+        "a": 4,
+        "c": 1,
+        "ca": 1,
+        "d": 3,
+        "da": 1,
+        "e": 2,
+        "h": 2,
+        "ha": 1,
+        "l": 2,
+        "n": 1,
+        "o": 1,
+        "p": 2,
+        "s": 1,
+        "t": 3,
+        "w": 1,
+        "wa": 1
+      },
+      "selected": [
+        "d",
+        "t"
+      ],
+      "created": [
+        {
+          "id": "nd",
+          "text": "nd",
+          "left": {
+            "id": "n",
+            "text": "n",
+            "start": 13,
+            "end": 14
+          },
+          "right": {
+            "id": "d",
+            "text": "d",
+            "start": 14,
+            "end": 15
+          }
+        },
+        {
+          "id": "^t",
+          "text": "^t",
+          "left": {
+            "id": "^",
+            "text": "^",
+            "start": 0,
+            "end": 0
+          },
+          "right": {
+            "id": "t",
+            "text": "t",
+            "start": 0,
+            "end": 1
+          }
+        },
+        {
+          "id": "cat",
+          "text": "cat",
+          "left": {
+            "id": "ca",
+            "text": "ca",
+            "start": 3,
+            "end": 5
+          },
+          "right": {
+            "id": "t",
+            "text": "t",
+            "start": 5,
+            "end": 6
+          }
+        }
+      ]
+    },
+    {
+      "cycle": 2,
+      "stream": [
+        {
+          "id": "^",
+          "text": "^",
+          "start": 0,
+          "end": 0
+        },
+        {
+          "id": "t",
+          "text": "t",
+          "start": 0,
+          "end": 1
+        },
+        {
+          "id": "h",
+          "text": "h",
+          "start": 1,
+          "end": 2
+        },
+        {
+          "id": "e",
+          "text": "e",
+          "start": 2,
+          "end": 3
+        },
+        {
+          "id": "cat",
+          "text": "cat",
+          "start": 3,
+          "end": 6
+        },
+        {
+          "id": "wa",
+          "text": "wa",
+          "start": 6,
+          "end": 8
+        },
+        {
+          "id": "s",
+          "text": "s",
+          "start": 8,
+          "end": 9
+        },
+        {
+          "id": "o",
+          "text": "o",
+          "start": 9,
+          "end": 10
+        },
+        {
+          "id": "l",
+          "text": "l",
+          "start": 10,
+          "end": 11
+        },
+        {
+          "id": "da",
+          "text": "da",
+          "start": 11,
+          "end": 13
+        },
+        {
+          "id": "nd",
+          "text": "nd",
+          "start": 13,
+          "end": 15
+        },
+        {
+          "id": "ha",
+          "text": "ha",
+          "start": 15,
+          "end": 17
+        },
+        {
+          "id": "p",
+          "text": "p",
+          "start": 17,
+          "end": 18
+        },
+        {
+          "id": "p",
+          "text": "p",
+          "start": 18,
+          "end": 19
+        },
+        {
+          "id": "y",
+          "text": "y",
+          "start": 19,
+          "end": 20
+        }
+      ],
+      "currentEdges": [
+        "^->t",
+        "cat->wa",
+        "da->nd",
+        "e->cat",
+        "h->e",
+        "ha->p",
+        "l->da",
+        "nd->ha",
+        "o->l",
+        "p->p",
+        "p->y",
+        "s->o",
+        "t->h",
+        "wa->s"
+      ],
+      "accumulatedEdges": [
+        "^->t",
+        "a->n",
+        "a->p",
+        "a->s",
+        "a->t",
+        "c->a",
+        "ca->t",
+        "cat->wa",
+        "d->a",
+        "d->h",
+        "d->ha",
+        "da->n",
+        "da->nd",
+        "e->c",
+        "e->ca",
+        "e->cat",
+        "h->a",
+        "h->e",
+        "ha->p",
+        "l->d",
+        "l->da",
+        "n->d",
+        "nd->ha",
+        "o->l",
+        "p->p",
+        "p->y",
+        "s->o",
+        "t->h",
+        "t->w",
+        "t->wa",
+        "w->a",
+        "wa->s"
+      ],
+      "outgoingDegrees": {
+        "^": 1,
+        "a": 4,
+        "c": 1,
+        "ca": 1,
+        "cat": 1,
+        "d": 3,
+        "da": 2,
+        "e": 3,
+        "h": 2,
+        "ha": 1,
+        "l": 2,
+        "n": 1,
+        "nd": 1,
+        "o": 1,
+        "p": 2,
+        "s": 1,
+        "t": 3,
+        "w": 1,
+        "wa": 1
+      },
+      "selected": [
+        "e"
+      ],
+      "created": [
+        {
+          "id": "he",
+          "text": "he",
+          "left": {
+            "id": "h",
+            "text": "h",
+            "start": 1,
+            "end": 2
+          },
+          "right": {
+            "id": "e",
+            "text": "e",
+            "start": 2,
+            "end": 3
+          }
+        }
+      ]
+    },
+    {
+      "cycle": 3,
+      "stream": [
+        {
+          "id": "^",
+          "text": "^",
+          "start": 0,
+          "end": 0
+        },
+        {
+          "id": "t",
+          "text": "t",
+          "start": 0,
+          "end": 1
+        },
+        {
+          "id": "he",
+          "text": "he",
+          "start": 1,
+          "end": 3
+        },
+        {
+          "id": "cat",
+          "text": "cat",
+          "start": 3,
+          "end": 6
+        },
+        {
+          "id": "wa",
+          "text": "wa",
+          "start": 6,
+          "end": 8
+        },
+        {
+          "id": "s",
+          "text": "s",
+          "start": 8,
+          "end": 9
+        },
+        {
+          "id": "o",
+          "text": "o",
+          "start": 9,
+          "end": 10
+        },
+        {
+          "id": "l",
+          "text": "l",
+          "start": 10,
+          "end": 11
+        },
+        {
+          "id": "da",
+          "text": "da",
+          "start": 11,
+          "end": 13
+        },
+        {
+          "id": "nd",
+          "text": "nd",
+          "start": 13,
+          "end": 15
+        },
+        {
+          "id": "ha",
+          "text": "ha",
+          "start": 15,
+          "end": 17
+        },
+        {
+          "id": "p",
+          "text": "p",
+          "start": 17,
+          "end": 18
+        },
+        {
+          "id": "p",
+          "text": "p",
+          "start": 18,
+          "end": 19
+        },
+        {
+          "id": "y",
+          "text": "y",
+          "start": 19,
+          "end": 20
+        }
+      ],
+      "currentEdges": [
+        "^->t",
+        "cat->wa",
+        "da->nd",
+        "ha->p",
+        "he->cat",
+        "l->da",
+        "nd->ha",
+        "o->l",
+        "p->p",
+        "p->y",
+        "s->o",
+        "t->he",
+        "wa->s"
+      ],
+      "accumulatedEdges": [
+        "^->t",
+        "a->n",
+        "a->p",
+        "a->s",
+        "a->t",
+        "c->a",
+        "ca->t",
+        "cat->wa",
+        "d->a",
+        "d->h",
+        "d->ha",
+        "da->n",
+        "da->nd",
+        "e->c",
+        "e->ca",
+        "e->cat",
+        "h->a",
+        "h->e",
+        "ha->p",
+        "he->cat",
+        "l->d",
+        "l->da",
+        "n->d",
+        "nd->ha",
+        "o->l",
+        "p->p",
+        "p->y",
+        "s->o",
+        "t->h",
+        "t->he",
+        "t->w",
+        "t->wa",
+        "w->a",
+        "wa->s"
+      ],
+      "outgoingDegrees": {
+        "^": 1,
+        "a": 4,
+        "c": 1,
+        "ca": 1,
+        "cat": 1,
+        "d": 3,
+        "da": 2,
+        "e": 3,
+        "h": 2,
+        "ha": 1,
+        "he": 1,
+        "l": 2,
+        "n": 1,
+        "nd": 1,
+        "o": 1,
+        "p": 2,
+        "s": 1,
+        "t": 4,
+        "w": 1,
+        "wa": 1
+      },
+      "selected": [
+        "da",
+        "h",
+        "l",
+        "p"
+      ],
+      "created": [
+        {
+          "id": "lda",
+          "text": "lda",
+          "left": {
+            "id": "l",
+            "text": "l",
+            "start": 10,
+            "end": 11
+          },
+          "right": {
+            "id": "da",
+            "text": "da",
+            "start": 11,
+            "end": 13
+          }
+        },
+        {
+          "id": "ol",
+          "text": "ol",
+          "left": {
+            "id": "o",
+            "text": "o",
+            "start": 9,
+            "end": 10
+          },
+          "right": {
+            "id": "l",
+            "text": "l",
+            "start": 10,
+            "end": 11
+          }
+        },
+        {
+          "id": "hap",
+          "text": "hap",
+          "left": {
+            "id": "ha",
+            "text": "ha",
+            "start": 15,
+            "end": 17
+          },
+          "right": {
+            "id": "p",
+            "text": "p",
+            "start": 17,
+            "end": 18
+          }
+        },
+        {
+          "id": "pp",
+          "text": "pp",
+          "left": {
+            "id": "p",
+            "text": "p",
+            "start": 17,
+            "end": 18
+          },
+          "right": {
+            "id": "p",
+            "text": "p",
+            "start": 18,
+            "end": 19
+          }
+        }
+      ]
+    },
+    {
+      "cycle": 4,
+      "stream": [
+        {
+          "id": "^",
+          "text": "^",
+          "start": 0,
+          "end": 0
+        },
+        {
+          "id": "t",
+          "text": "t",
+          "start": 0,
+          "end": 1
+        },
+        {
+          "id": "he",
+          "text": "he",
+          "start": 1,
+          "end": 3
+        },
+        {
+          "id": "cat",
+          "text": "cat",
+          "start": 3,
+          "end": 6
+        },
+        {
+          "id": "wa",
+          "text": "wa",
+          "start": 6,
+          "end": 8
+        },
+        {
+          "id": "s",
+          "text": "s",
+          "start": 8,
+          "end": 9
+        },
+        {
+          "id": "ol",
+          "text": "ol",
+          "start": 9,
+          "end": 11
+        },
+        {
+          "id": "da",
+          "text": "da",
+          "start": 11,
+          "end": 13
+        },
+        {
+          "id": "nd",
+          "text": "nd",
+          "start": 13,
+          "end": 15
+        },
+        {
+          "id": "hap",
+          "text": "hap",
+          "start": 15,
+          "end": 18
+        },
+        {
+          "id": "p",
+          "text": "p",
+          "start": 18,
+          "end": 19
+        },
+        {
+          "id": "y",
+          "text": "y",
+          "start": 19,
+          "end": 20
+        }
+      ],
+      "currentEdges": [
+        "^->t",
+        "cat->wa",
+        "da->nd",
+        "hap->p",
+        "he->cat",
+        "nd->hap",
+        "ol->da",
+        "p->y",
+        "s->ol",
+        "t->he",
+        "wa->s"
+      ],
+      "accumulatedEdges": [
+        "^->t",
+        "a->n",
+        "a->p",
+        "a->s",
+        "a->t",
+        "c->a",
+        "ca->t",
+        "cat->wa",
+        "d->a",
+        "d->h",
+        "d->ha",
+        "da->n",
+        "da->nd",
+        "e->c",
+        "e->ca",
+        "e->cat",
+        "h->a",
+        "h->e",
+        "ha->p",
+        "hap->p",
+        "he->cat",
+        "l->d",
+        "l->da",
+        "n->d",
+        "nd->ha",
+        "nd->hap",
+        "o->l",
+        "ol->da",
+        "p->p",
+        "p->y",
+        "s->o",
+        "s->ol",
+        "t->h",
+        "t->he",
+        "t->w",
+        "t->wa",
+        "w->a",
+        "wa->s"
+      ],
+      "outgoingDegrees": {
+        "^": 1,
+        "a": 4,
+        "c": 1,
+        "ca": 1,
+        "cat": 1,
+        "d": 3,
+        "da": 2,
+        "e": 3,
+        "h": 2,
+        "ha": 1,
+        "hap": 1,
+        "he": 1,
+        "l": 2,
+        "n": 1,
+        "nd": 2,
+        "o": 1,
+        "ol": 1,
+        "p": 2,
+        "s": 2,
+        "t": 4,
+        "w": 1,
+        "wa": 1
+      },
+      "selected": [
+        "nd",
+        "s"
+      ],
+      "created": [
+        {
+          "id": "dand",
+          "text": "dand",
+          "left": {
+            "id": "da",
+            "text": "da",
+            "start": 11,
+            "end": 13
+          },
+          "right": {
+            "id": "nd",
+            "text": "nd",
+            "start": 13,
+            "end": 15
+          }
+        },
+        {
+          "id": "was",
+          "text": "was",
+          "left": {
+            "id": "wa",
+            "text": "wa",
+            "start": 6,
+            "end": 8
+          },
+          "right": {
+            "id": "s",
+            "text": "s",
+            "start": 8,
+            "end": 9
+          }
+        }
+      ]
+    },
+    {
+      "cycle": 5,
+      "stream": [
+        {
+          "id": "^",
+          "text": "^",
+          "start": 0,
+          "end": 0
+        },
+        {
+          "id": "t",
+          "text": "t",
+          "start": 0,
+          "end": 1
+        },
+        {
+          "id": "he",
+          "text": "he",
+          "start": 1,
+          "end": 3
+        },
+        {
+          "id": "cat",
+          "text": "cat",
+          "start": 3,
+          "end": 6
+        },
+        {
+          "id": "was",
+          "text": "was",
+          "start": 6,
+          "end": 9
+        },
+        {
+          "id": "ol",
+          "text": "ol",
+          "start": 9,
+          "end": 11
+        },
+        {
+          "id": "dand",
+          "text": "dand",
+          "start": 11,
+          "end": 15
+        },
+        {
+          "id": "hap",
+          "text": "hap",
+          "start": 15,
+          "end": 18
+        },
+        {
+          "id": "p",
+          "text": "p",
+          "start": 18,
+          "end": 19
+        },
+        {
+          "id": "y",
+          "text": "y",
+          "start": 19,
+          "end": 20
+        }
+      ],
+      "currentEdges": [
+        "^->t",
+        "cat->was",
+        "dand->hap",
+        "hap->p",
+        "he->cat",
+        "ol->dand",
+        "p->y",
+        "t->he",
+        "was->ol"
+      ],
+      "accumulatedEdges": [
+        "^->t",
+        "a->n",
+        "a->p",
+        "a->s",
+        "a->t",
+        "c->a",
+        "ca->t",
+        "cat->wa",
+        "cat->was",
+        "d->a",
+        "d->h",
+        "d->ha",
+        "da->n",
+        "da->nd",
+        "dand->hap",
+        "e->c",
+        "e->ca",
+        "e->cat",
+        "h->a",
+        "h->e",
+        "ha->p",
+        "hap->p",
+        "he->cat",
+        "l->d",
+        "l->da",
+        "n->d",
+        "nd->ha",
+        "nd->hap",
+        "o->l",
+        "ol->da",
+        "ol->dand",
+        "p->p",
+        "p->y",
+        "s->o",
+        "s->ol",
+        "t->h",
+        "t->he",
+        "t->w",
+        "t->wa",
+        "w->a",
+        "wa->s",
+        "was->ol"
+      ],
+      "outgoingDegrees": {
+        "^": 1,
+        "a": 4,
+        "c": 1,
+        "ca": 1,
+        "cat": 2,
+        "d": 3,
+        "da": 2,
+        "dand": 1,
+        "e": 3,
+        "h": 2,
+        "ha": 1,
+        "hap": 1,
+        "he": 1,
+        "l": 2,
+        "n": 1,
+        "nd": 2,
+        "o": 1,
+        "ol": 2,
+        "p": 2,
+        "s": 2,
+        "t": 4,
+        "w": 1,
+        "wa": 1,
+        "was": 1
+      },
+      "selected": [
+        "cat",
+        "ol"
+      ],
+      "created": [
+        {
+          "id": "hecat",
+          "text": "hecat",
+          "left": {
+            "id": "he",
+            "text": "he",
+            "start": 1,
+            "end": 3
+          },
+          "right": {
+            "id": "cat",
+            "text": "cat",
+            "start": 3,
+            "end": 6
+          }
+        },
+        {
+          "id": "wasol",
+          "text": "wasol",
+          "left": {
+            "id": "was",
+            "text": "was",
+            "start": 6,
+            "end": 9
+          },
+          "right": {
+            "id": "ol",
+            "text": "ol",
+            "start": 9,
+            "end": 11
+          }
+        }
+      ]
+    },
+    {
+      "cycle": 6,
+      "stream": [
+        {
+          "id": "^",
+          "text": "^",
+          "start": 0,
+          "end": 0
+        },
+        {
+          "id": "t",
+          "text": "t",
+          "start": 0,
+          "end": 1
+        },
+        {
+          "id": "hecat",
+          "text": "hecat",
+          "start": 1,
+          "end": 6
+        },
+        {
+          "id": "wasol",
+          "text": "wasol",
+          "start": 6,
+          "end": 11
+        },
+        {
+          "id": "dand",
+          "text": "dand",
+          "start": 11,
+          "end": 15
+        },
+        {
+          "id": "hap",
+          "text": "hap",
+          "start": 15,
+          "end": 18
+        },
+        {
+          "id": "p",
+          "text": "p",
+          "start": 18,
+          "end": 19
+        },
+        {
+          "id": "y",
+          "text": "y",
+          "start": 19,
+          "end": 20
+        }
+      ],
+      "currentEdges": [
+        "^->t",
+        "dand->hap",
+        "hap->p",
+        "hecat->wasol",
+        "p->y",
+        "t->hecat",
+        "wasol->dand"
+      ],
+      "accumulatedEdges": [
+        "^->t",
+        "a->n",
+        "a->p",
+        "a->s",
+        "a->t",
+        "c->a",
+        "ca->t",
+        "cat->wa",
+        "cat->was",
+        "d->a",
+        "d->h",
+        "d->ha",
+        "da->n",
+        "da->nd",
+        "dand->hap",
+        "e->c",
+        "e->ca",
+        "e->cat",
+        "h->a",
+        "h->e",
+        "ha->p",
+        "hap->p",
+        "he->cat",
+        "hecat->wasol",
+        "l->d",
+        "l->da",
+        "n->d",
+        "nd->ha",
+        "nd->hap",
+        "o->l",
+        "ol->da",
+        "ol->dand",
+        "p->p",
+        "p->y",
+        "s->o",
+        "s->ol",
+        "t->h",
+        "t->he",
+        "t->hecat",
+        "t->w",
+        "t->wa",
+        "w->a",
+        "wa->s",
+        "was->ol",
+        "wasol->dand"
+      ],
+      "outgoingDegrees": {
+        "^": 1,
+        "a": 4,
+        "c": 1,
+        "ca": 1,
+        "cat": 2,
+        "d": 3,
+        "da": 2,
+        "dand": 1,
+        "e": 3,
+        "h": 2,
+        "ha": 1,
+        "hap": 1,
+        "he": 1,
+        "hecat": 1,
+        "l": 2,
+        "n": 1,
+        "nd": 2,
+        "o": 1,
+        "ol": 2,
+        "p": 2,
+        "s": 2,
+        "t": 5,
+        "w": 1,
+        "wa": 1,
+        "was": 1,
+        "wasol": 1
+      },
+      "selected": [],
+      "created": []
+    }
+  ]
+}

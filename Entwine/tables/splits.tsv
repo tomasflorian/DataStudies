@@ -1,0 +1,6 @@
+#! hint	splits
+# Splits made by hand:   backup-03 <tab> backup <tab> 03
+# on	label	function
+file	split	/^(?!eoe:)[^#\s].*$/
+split	text	/^([^\t]+)/
+split	part	/\t([^\t]+)/

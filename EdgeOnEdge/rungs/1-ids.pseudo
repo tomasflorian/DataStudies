@@ -1,0 +1,8 @@
+RUNG 1 — ids: [left, right] in, [left, id, right] out
+  A pile leaves each line's id unsaid (it is a hash of the two ends). References point at
+  ids, so this is the first thing any reader needs.
+
+  usage:  1-ids FILE.eoe ...
+
+for each line in (read pile):
+    print [left, hash(left, right), right]

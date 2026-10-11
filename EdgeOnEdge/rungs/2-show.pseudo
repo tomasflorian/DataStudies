@@ -1,0 +1,13 @@
+RUNG 2 — show: a pile a person can read
+  Unfold each reference into the line it names, and shorten long text to its first line.
+  Knows no markers: "<NOUN>" reads like any other string. Pipe into grep.
+
+  usage:  2-show FILE.eoe ... | grep 10.2.14.7
+
+show end(end):
+    if end is text:       return its first line, cut to 40 characters
+    if end names a line:  return "(" show end(line.left) " → " show end(line.right) ")"
+    otherwise:            return "#" end                    (an id with no line here)
+
+for each line in (read pile):
+    print show end(left) " → " show end(right)

@@ -1,0 +1,41 @@
+RUNG 10 — find: meaningful paths, found automatically
+  From a string to every string said to be a word, by the shortest readings that keep
+  their meaning. No walking by hand, no scores. `find tomas ip` is the ip of tomas.
+
+  usage:  find tomas ip FILE.eoe ...                the ip of tomas
+          find dana ip FILE.eoe ...                 two hops: dana's order came from web-01.corp
+          find bob ip --slack=1 FILE.eoe ...        none clean; the nearest with one weak link
+          find bob ip --loose FILE.eoe ...          no limit on broken rules
+          --hops=N   give up after N hops (4)
+
+a hop = up to a whole, down to another part of it       (things meet only through a whole)
+words are never walked; they only name the lines
+
+rules that keep a reading meaningful:
+    kept       a string passed through is the same word coming in and going out
+               (10.2.14.7 is ip in the login and ip in hosts: a join;
+                "1" is seq in one and quantity in the other: a coincidence)
+    distinct   no two wholes of the same kind in one reading
+               (login → "Accepted" → another login: shared value, not shared thing)
+
+find within(start, target, slack):
+    readings = [just the start]
+    for hop count 1 .. --hops:
+        for each reading, each whole of its last string:
+            breaks = rules this hop would break
+            skip if the reading's breaks + these > slack
+            for each other part of the whole:
+                extend the reading with this hop (and its breaks)
+                if the part is said to be target:  it's an answer
+        if any answers:  return all of them       (ties are different explanations)
+    return none
+
+find(start, target):
+    for slack = 0, 1, ... up to --slack (0):      (--loose: no limit)
+        answers = find within(start, target, slack)
+        if answers:  return them, and the slack they took
+    return none
+
+print each answer once, its readings under it, each hop as
+    "<words> in <kind> <whole> → <words> <part>"
+with any break shown above its hop:  ⚠ "1" is seq on the way in, quantity on the way out

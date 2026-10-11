@@ -1,0 +1,13 @@
+#! scope notes@5
+#! vocabulary IT
+#! <NOUN> notes hint note person
+#! <VERB> author subject verdict
+# Notes people wrote:   tomas: 203.0.113.50 looks like brute-force
+# Who wrote a note is part of the note.
+# on	id	tags	regex
+file	hint	hint	^eoe: notes$
+file	notes	notes	(?<=^eoe: notes\n)[\s\S]+
+notes	note	note	^.+$
+note	person	person author	^([^:]+):
+note	-	subject	: (\S+) looks like 
+note	-	verdict	 looks like (.+)$

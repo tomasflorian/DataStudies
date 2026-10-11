@@ -1,0 +1,13 @@
+RUNG 9 — steps: a walk written as moves (see moves.pseudo)
+  A string, then the moves to take from it. One row per way through; each cell is the
+  end reached and what its line is said to be. The page's column walk, as a command.
+
+  usage:  9-steps tomas whole part FILE.eoe ...          the rows tomas is in, and beside what
+          9-steps tomas beside:ip FILE.eoe ...           the ip of tomas, one row away
+          9-steps 10.2.14.7 whole* FILE.eoe ...          every whole above it, up to the file
+          9-steps "<NOUN>" down up right FILE.eoe ...    every noun, what carries it, what was found
+
+rows = walk(start, moves given)
+for each row:
+    print its cells, "<words of the line> <end>", joined by │
+print how many rows

@@ -1,0 +1,6 @@
+# How someone who knows places walks the pile: cities, countries, rivers, and what they
+# are said to be. Picking it opens geography's own words; the other languages stay closed.
+
+alias sits-on    = on the river
+
+broader place = city

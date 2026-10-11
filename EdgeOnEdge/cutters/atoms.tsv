@@ -1,0 +1,16 @@
+#! scope atoms@4
+#! vocabulary default
+#! <NOUN> script hint atom function argument result
+#! <VERB> function argument result
+# A script that writes atoms, taken as a text file:   atom capitalOf   france  paris
+# Only a plain line is cut: a function, an argument and a result, none of them quoted or
+# computed. A loop, a quoted value and the comments stay as they are, in the script.
+# It says nothing about kinds and speaks no language of its own, so its finds are tagged
+# "default".
+# on	id	tags	regex
+file	hint	hint	^eoe: script$
+file	script	script	(?<=^eoe: script\n)[\s\S]+
+script	atom	atom	^atom +[^\s"$]+ +[^\s"$]+ +[^\s"$]+$
+atom	function	function	^atom +(\S+)
+atom	argument	argument	^atom +\S+ +(\S+)
+atom	result	result	 (\S+)$

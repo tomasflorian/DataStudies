@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StringWalk</title>
+<link rel="stylesheet" href="/style.css">
+<script type="module" src="/dist/gui/app.js"></script>
+</head>
+<body>
+<header class="top">
+  <strong class="brand">StringWalk</strong>
+  <span id="pile" class="muted"></span>
+  <label class="picker">taxonomy <select id="taxonomy"></select></label>
+</header>
+
+<form id="line" class="line" autocomplete="off">
+  <span class="prompt">$</span>
+  <input id="command" spellcheck="false"
+         placeholder="add host resolves-to · add ip* · cd .. · shorten · taxonomy gardener · query …">
+</form>
+
+<div id="message" class="message" hidden></div>
+
+<main class="panes">
+  <section class="left">
+    <h2 id="here"></h2>
+    <input id="filter" class="filter" type="search" placeholder="filter" spellcheck="false">
+    <label class="showall" hidden><input id="showall" type="checkbox"> show everything</label>
+    <ul id="offers" class="offers"></ul>
+    <p id="outside" class="muted outside"></p>
+  </section>
+
+  <section class="right">
+    <div class="querybar">
+      <code id="query" class="query"></code>
+      <button id="reset" type="button" title="clear the reading · back brings it back">start over</button>
+      <button id="copyquery" type="button">copy query</button>
+      <button id="copyread" type="button">copy ./read.ts</button>
+    </div>
+    <ol id="tree" class="tree"></ol>
+    <details id="taxonomytree" class="taxonomytree" hidden>
+      <summary id="taxonomyname"></summary>
+      <div id="taxonomybody"></div>
+    </details>
+    <div class="tabletools">
+      <input id="tablefilter" class="filter" type="search"
+             placeholder="quick filter rows" aria-label="Quick filter table rows"
+             spellcheck="false">
+      <span id="rows" class="muted"></span>
+    </div>
+    <div class="tablewrap"><table id="table"></table></div>
+  </section>
+</main>
+
+<p id="boot" class="boot">Loading… If this stays, the page has not been built yet: <code>npm run build</code>.</p>
+</body>
+</html>

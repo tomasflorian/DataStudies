@@ -1,0 +1,5 @@
+["ip","kind, is-a, example, kind","address"]
+["host","kind, is-a, example, kind","address"]
+["account","kind, is-a, example, kind","identity"]
+["person","kind, is-a, example, kind","identity"]
+["ticket","kind, is-a, example, kind","record"]

@@ -1,0 +1,21 @@
+RUNG 8 — folded: rung 7, readable
+  Walk only contains lines. Everything said about a line becomes its label, not a place
+  to walk: words become its name ("user/account"), sources a note ("syslog@6"). The
+  words' own neighbours (every other person, the tower, the markers) are not visited.
+
+  usage:  8-folded tomas FILE.eoe ...                 each row tomas is in
+          8-folded 10.2.14.7 --depth=1 FILE.eoe ...   and each of those, one level on
+                                                      (the mess returns through "sshd", "18")
+
+label(step) = the words said about the line it went through, or "part"
+
+branches(string):
+    for each whole the string is in:                        (move: whole)
+        "<label> in <whole>  <sources>"
+            under it, each other part of that whole:         (move: part)
+                "<label> <part>"                            can grow further
+    for each part of the string:
+        "has <label> <part>"                                can grow further
+
+draw the branches as a tree:
+    first --wide (12) per branch, ↺ for repeats, grow parts while depth < --depth (0)

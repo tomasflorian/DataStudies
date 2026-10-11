@@ -1,0 +1,13 @@
+RUNG 3 — around: grep for a pile
+  Everything said about a string: every line touching it, and every line about those
+  lines. grep finds the text; this finds what was said about it.
+
+  usage:  3-around tomas FILE.eoe ...
+
+touching(end) = lines with end as their left, and lines with end as their right
+
+for each string asked:
+    for each line in touching(string):
+        print show(line)
+        for each note in touching(line's id):      the words it carries, where it came from
+            print "    " show(note)

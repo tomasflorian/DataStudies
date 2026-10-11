@@ -1,0 +1,14 @@
+RUNG 5 — found-as: what each string was found as, flattened
+  ["10.2.14.7", "ip"]. Friendly and lossy: the vocabulary is dropped, so IT's host and the
+  party plan's host come out as one word.
+
+  usage:  5-found-as FILE.eoe ...          every string and its words
+          5-found-as ip FILE.eoe ...       only the ips
+
+for each sense marked <NOUN>:                         a sense is [vocabulary, word]
+    for each line touching the sense:
+        finder = the line at its other end
+        if finder is a contains line, or the root's line into a file:
+            emit [finder.right, sense's word]          the string it found, and the word
+
+print the pairs, once each, sorted            (only those for the words asked, if any)

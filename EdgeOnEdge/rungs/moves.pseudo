@@ -1,0 +1,31 @@
+MOVES — the vocabulary every rung above composes, instead of reaching into lines
+
+level 0 — the three lookups a pile answers:
+    leaving(end)    lines with end as their left
+    reaching(end)   lines with end as their right
+    named(id)       the line an id names
+    (a line's id is an end too, so "what is said about a line" is the same lookups)
+
+level 1 — moves, each from a step {to, via line} to next steps:
+    down    along any line, left → right              up      right → left
+    part    down, along contains lines only           whole   up, along contains only
+    left    from a reference to its line's left       right   ... to its line's right
+    about   from the line just walked to what is said about it
+    rule:   a move never goes back through the line it came by
+
+level 2 — phrases, named chains of moves:
+    beside   = whole part                    the other parts of each whole it is in
+    is       = whole about                   what the finding lines say it is
+    peers    = whole about up right          everything found as the same word
+    broader  = down:<BROADER>                one step up the tower
+
+operators, on any move or phrase:
+    narrow   move:word    keep steps whose line is said to be (or said by) word
+                          narrowing a phrase narrows its last move: beside:ip = whole part:ip
+    repeat   move*        take it again and again, to every end not yet reached
+
+said(line) = what is said about a line, folded:
+    a reference → a word (the end of the sense that isn't its vocabulary)
+    a string    → a source
+
+walk(start, moves) = rows: each row the steps taken, the evidence for its last end

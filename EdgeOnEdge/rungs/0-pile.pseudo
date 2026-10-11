@@ -1,0 +1,18 @@
+RUNG 0 — pile: cat for piles
+  Every other rung starts here. Read lines from the files named (or stdin), merge them,
+  keep each line once, and write the pile back out. Output is a pile, so rungs chain.
+
+  usage:  0-pile FILE.eoe ...        or      ... | 0-pile
+
+read pile:
+    texts  = contents of each .eoe file named, or stdin if none
+    lines  = for each text: parse each row as [left, right]    (report rows that aren't)
+    lines  = union of all lines, sorted, duplicates removed
+    lines  = drop lines whose ids collide                      (report them)
+    return lines, and an index: by id, by left end, by right end
+
+words given    = arguments that are neither files nor --flags
+help if asked  = on --help, or too few words: print this file's header and stop
+
+main:
+    write each line of (read pile) as [left, right]

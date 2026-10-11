@@ -1,0 +1,14 @@
+#! scope tickets@6
+#! vocabulary IT
+#! <NOUN> ticket-export hint ticket-row ticket account person
+#! <VERB> id raised-by assigned-to summary
+# A ticket export:   OPS-4412,svc-deploy,dana,deploy key rejected on backup-03
+# The header row is a row like any other, and it is not a ticket.
+# on	id	tags	regex
+file	hint	hint	^eoe: ticket-export$
+file	ticket-export	ticket-export	(?<=^eoe: ticket-export\n)[\s\S]+
+ticket-export	ticket-row	ticket-row	^(?!id,).+$
+ticket-row	ticket	ticket id	^([^,]+)
+ticket-row	account	account raised-by	^[^,]*,([^,]+)
+ticket-row	person	person assigned-to	^(?:[^,]*,){2}([^,]+)
+ticket-row	-	summary	^(?:[^,]*,){3}(.+)$

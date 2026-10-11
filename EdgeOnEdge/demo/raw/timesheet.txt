@@ -1,0 +1,8 @@
+eoe: timesheet
+bob|2026-08-25|projX|8|1
+alice|2026-08-25|projX|5|2
+bob|2026-08-26|projX|4|3
+bob|2026-08-25|projX|6|4
+carol|2026-08-27|projY|7
+carol|2026-08-27|projY|8
+carol|2026-08-27|projX|8

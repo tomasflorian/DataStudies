@@ -1,0 +1,13 @@
+# How someone in IT walks the pile. Picking it opens IT's own words and its tags below;
+# every other language stays closed until switched on.
+
+tag machine  = host@IT ip
+tag identity = account person@IT
+tag record   = ticket-row zone-record hosts-entry entry vault-record timesheet-entry
+
+broader address  = ip host@IT
+broader identity = account person@IT
+
+alias raised-by   = raised by
+alias assigned-to = assigned to
+alias from        = source address

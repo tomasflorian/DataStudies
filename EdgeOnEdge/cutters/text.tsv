@@ -1,0 +1,5 @@
+#! scope text@2
+#! vocabulary default
+#! file text
+#! <NOUN> text
+# Every file is text. This table has no rows: it says so, of every file, and cuts nothing.

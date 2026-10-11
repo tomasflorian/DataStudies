@@ -1,0 +1,8 @@
+eoe: hosts-file
+# corp hosts, maintained by hand
+10.2.14.7    backup-03.corp   backup-03
+10.2.14.9    backup-04.corp   backup-04
+10.2.14.20   build-01.corp    build-01
+
+# duplicated on purpose: same claim, same scope, one relation
+10.2.14.7    backup-03.corp

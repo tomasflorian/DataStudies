@@ -1,0 +1,28 @@
+#! scope syslog@6
+#! vocabulary IT
+#! <NOUN> syslog hint entry time host program account ip
+#! <VERB> when on by pid outcome method user from port ran month day clock
+# A syslog: auth.log, cron.log, anything in that shape.
+# Each entry says when, on which host, which program spoke, and what it said.
+# Rows look straight into the entry, so the host and the user are siblings.
+# what sshd says about a login
+# what cron says it ran
+# a time is made of smaller things
+# on	id	tags	regex
+file	hint	hint	^eoe: syslog$
+file	syslog	syslog	(?<=^eoe: syslog\n)[\s\S]+
+syslog	entry	entry	^.+$
+entry	time	time when	^(\w+ +\d+ [\d:]+) 
+entry	host	host on	^\w+ +\d+ [\d:]+ (\S+) 
+entry	program	program by	^(?:\S+ +){4}([^\[:\s]+)
+entry	-	pid	^(?:\S+ +){4}[^\[\s]+\[(\d+)\]
+entry	-	outcome	sshd\[\d+\]: (Accepted|Failed) 
+entry	-	method	sshd\[\d+\]: (?:Accepted|Failed) (\S+) for 
+entry	account	account user	sshd\[\d+\]: .* for (\S+) from 
+entry	ip	ip from	 from (\d{1,3}(?:\.\d{1,3}){3}) 
+entry	-	port	 port (\d+)
+entry	account	account user	CRON\[\d+\]: \((\S+)\)
+entry	-	ran	CMD \((.*)\)$
+time	-	month	^(\w+)
+time	-	day	^\w+ +(\d+)
+time	-	clock	(\d\d:\d\d:\d\d)$

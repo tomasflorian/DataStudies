@@ -1,0 +1,1 @@
+This project tries to resolve the love-hate relationship I have with trees.  I love that I can grab a tree by the root and dip it into the ocean of information and pull something out.  I hate it when people drain the ocean, chop down the forest and make one giant authorative taxonomy like tree out of the dead parts.

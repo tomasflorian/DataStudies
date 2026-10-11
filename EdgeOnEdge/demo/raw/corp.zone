@@ -1,0 +1,6 @@
+eoe: zone-file
+; corp. — exported from the DNS server, Sep 18
+backup-03.corp.   IN  A  10.2.14.7
+build-01.corp.    IN  A  10.2.14.20
+web-01.corp.      IN  A  10.2.14.9
+mail-01.corp.     IN  A  10.9.0.4

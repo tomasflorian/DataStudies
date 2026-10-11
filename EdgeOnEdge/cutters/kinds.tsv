@@ -1,0 +1,11 @@
+#! scope kinds@6
+#! vocabulary IT
+#! <NOUN> taxonomy hint taxonomy-entry kind
+#! <VERB> kind is-a
+# A hand-written taxonomy:   ip is-a address
+# on	id	tags	regex
+file	hint	hint	^eoe: taxonomy$
+file	taxonomy	taxonomy	(?<=^eoe: taxonomy\n)[\s\S]+
+taxonomy	taxonomy-entry	taxonomy-entry	^.+$
+taxonomy-entry	kind	kind	^(\S+) is-a 
+taxonomy-entry	kind	kind is-a	 is-a (\S+)$

@@ -1,0 +1,6 @@
+#! hint	hosts-file
+# An /etc/hosts file:   10.2.14.7    backup-03.corp   backup-03
+# on	label	function
+file	line	/^(?!eoe:)[^#\s].*$/
+line	ip	/^(\S+)/
+line	name	/\s(\S+)/

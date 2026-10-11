@@ -1,0 +1,18 @@
+RUNG 6 — ask: the first question, answered by cheapest path
+  "The ip of tomas" is `ask tomas ip`. Every string found as ip that the contains lines
+  connect to tomas, cheapest first, with its path. Hubs cost more to pass through.
+  (Superseded by rung 10, which uses meaning instead of cost.)
+
+  usage:  ask tomas ip FILE.eoe ...
+          ask tomas ip --flat FILE.eoe ...     every step costs 1: hubs unpriced
+
+neighbours(string) = its wholes and its parts               (moves: whole, part)
+step cost(string)  = 1 if --flat, else log2(1 + number of neighbours)
+                     a five-field log line is cheap; a whole file's text is dear
+
+ask(from, what):
+    targets = strings found as `what` (rung 5), or `what` itself if nothing is
+    cheapest paths from `from` to every string            (Dijkstra, using step cost)
+    return targets that were reached, cheapest first, each with its path
+
+print the first six answers, each path as "⊂ up to" / "⊃ down to" steps

@@ -1,0 +1,23 @@
+{
+  "name": "attempt2026-reversiblefunctiongraph",
+  "version": "1.0.0",
+  "description": "",
+  "main": "serve.ts",
+  "scripts": {
+    "start": "npx tsx serve.ts",
+    "build": "npx tsc",
+    "rfg": "npx tsx rfg.ts",
+    "snapshot": "./runAll.sh",
+    "produce": "./run.sh"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^26.5.0",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
+  }
+}

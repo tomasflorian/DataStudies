@@ -1,0 +1,19 @@
+#! scope timesheet@4
+#! vocabulary IT
+#! <NOUN> timesheet hint timesheet-entry person date project hours seq year month day
+#! <VERB> employee on project hours seq
+# A timesheet:   bob|2026-08-25|projX|8|1
+# Who, when, on what, how many hours, and a sequence number some rows leave off. An
+# edit is a new row; the old one stays, and which is current is a reader's question.
+# on	id	tags	regex
+file	hint	hint	^eoe: timesheet$
+file	timesheet	timesheet	(?<=^eoe: timesheet\n)[\s\S]+
+timesheet	timesheet-entry	timesheet-entry	^[^|\n]+(?:\|[^|\n]+){3,4}$
+timesheet-entry	person	person employee	^([^|]+)
+timesheet-entry	date	date on	^[^|]+\|([^|]+)
+timesheet-entry	project	project	^(?:[^|]+\|){2}([^|]+)
+timesheet-entry	hours	hours	^(?:[^|]+\|){3}([^|]+)
+timesheet-entry	seq	seq	^(?:[^|]+\|){4}([^|]+)$
+date	year	year	^(\d{4})-
+date	month	month	^\d{4}-(\d{2})-
+date	day	day	-(\d{2})$

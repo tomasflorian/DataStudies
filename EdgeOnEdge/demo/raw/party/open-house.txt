@@ -1,0 +1,6 @@
+eoe: party-plan
+autumn open house
+host: dana
+guest: tomas
+guest: mike
+venue: paris

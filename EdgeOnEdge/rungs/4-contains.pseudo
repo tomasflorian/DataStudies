@@ -1,0 +1,21 @@
+RUNG 4 — contains: a filter for the lines that mean "found inside"
+  The first rung that knows a marker: <CONTAINS>, the root. A line means "contains" when
+  the root reaches it: walking down from each file's text, through lines whose right end
+  appears inside their left. Everything else is an association.
+
+  usage:  4-contains FILE.eoe ... | 2-show          what contains what
+          4-contains --rest FILE.eoe ...            everything else: words, tower, sources
+
+contains lines:
+    waiting = every text the root <CONTAINS> points at
+    while waiting:
+        whole = take one from waiting
+        for each line leaving whole:
+            if line.right is text inside whole:
+                mark line as contains
+                add line.right to waiting
+
+main:
+    if --rest:  write every line not marked
+    else:       write the marked lines, plus the root's own lines
+                (so reading the output again finds the same contains)

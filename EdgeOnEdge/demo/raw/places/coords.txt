@@ -1,0 +1,3 @@
+eoe: place-list
+paris:2.35,48.85
+tokyo:139.69,35.68

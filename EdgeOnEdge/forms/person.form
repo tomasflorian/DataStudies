@@ -1,0 +1,9 @@
+# A person, in any vocabulary: IT's staff and accounts, the party plan's guests and hosts.
+# Run:  ./rungs/11-form.ts forms/person.form demo/layers/*.eoe
+
+form      person
+each      person
+ip        find ip
+tickets   beside:ticket         many
+hours     beside:hours          many
+orders    beside:order          many

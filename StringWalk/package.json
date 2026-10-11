@@ -1,0 +1,14 @@
+{
+  "name": "stringwalk",
+  "private": true,
+  "type": "module",
+  "description": "Cut a pile of documents apart and read it back together.",
+  "scripts": {
+    "build": "tsc -p gui",
+    "watch": "tsc -p gui --watch",
+    "gui": "tsc -p gui && node server.ts"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,0 +1,6 @@
+eoe: taxonomy
+ip is-a address
+host is-a address
+account is-a identity
+person is-a identity
+ticket is-a record

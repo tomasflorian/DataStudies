@@ -1,0 +1,12 @@
+#! scope dns@6
+#! vocabulary IT
+#! <NOUN> zone-file hint zone-record host ip
+#! <VERB> name address
+# A zone export:   web-01.corp.   IN  A  10.2.14.9
+# Where the hosts file holds the same two, they are parts of two different wholes.
+# on	id	tags	regex
+file	hint	hint	^eoe: zone-file$
+file	zone-file	zone-file	(?<=^eoe: zone-file\n)[\s\S]+
+zone-file	zone-record	zone-record	^[^;\s].*$
+zone-record	host	host name	^(\S+?)\.?\s
+zone-record	ip	ip address	\sA\s+(\S+)

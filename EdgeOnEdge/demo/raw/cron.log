@@ -1,0 +1,4 @@
+eoe: syslog
+Sep 18 04:00:01 backup-03.corp CRON[3310]: (svc-deploy) CMD (/opt/deploy/sync.sh)
+Sep 18 04:05:01 web-01.corp CRON[2210]: (www-data) CMD (php /var/www/shop/cron.php)
+Sep 18 05:05:01 web-01.corp CRON[2291]: (www-data) CMD (php /var/www/shop/cron.php)

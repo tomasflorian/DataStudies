@@ -1,0 +1,25 @@
+#! scope places@4
+#! vocabulary geography
+#! <NOUN> place-list hint place-entry city country continent river coordinates longitude latitude
+#! <VERB> country continent river at
+# Five ways of writing the same two cities down, and one table for all of them:
+#   paris,france            paris,france,europe      paris:2.35,48.85
+#   {"place":"paris",...}   name: paris / nation: france
+# Each way of writing has its own rows; a row finds nothing in a file written another way.
+# on	id	tags	regex
+file	hint	hint	^eoe: place-list$
+file	place-list	place-list	(?<=^eoe: place-list\n)[\s\S]+
+place-list	place-entry	place-entry	^(?!city,)[a-z]+(?:,[a-z]+){1,2}$
+place-list	place-entry	place-entry	^[a-z]+:[-\d.]+,[-\d.]+$
+place-list	place-entry	place-entry	\{[^{}]*\}
+place-list	place-entry	place-entry	^name: .+\n.+$
+place-entry	city	city	^([a-z]+)(?:,|:[-\d])
+place-entry	city	city	"place":"([^"]+)"
+place-entry	city	city	^name: (.+)$
+place-entry	country	country	^[a-z]+,([a-z]+)
+place-entry	country	country	^nation: (.+)$
+place-entry	continent	continent	^[a-z]+,[a-z]+,([a-z]+)$
+place-entry	river	river	"river":"([^"]+)"
+place-entry	coordinates	coordinates at	^[a-z]+:(\S+)$
+coordinates	longitude	longitude	^([^,]+),
+coordinates	latitude	latitude	,([^,]+)$

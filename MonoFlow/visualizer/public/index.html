@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f3eddf">
+  <title>MonoFlow — paper replay</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="masthead">
+    <div>
+      <p class="eyebrow">MonoFlow / learning trace</p>
+      <h1>Paper replay</h1>
+    </div>
+    <div class="file-actions">
+      <label class="button secondary" for="trace-file">Open trace JSON</label>
+      <input id="trace-file" type="file" accept=".json,application/json">
+      <button class="button secondary" id="reset-example">Example</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <p>Letters never move. Tokens grow around them. Step through the exact
+        decisions recorded by <code>monoflow2.ts</code>.</p>
+      <p class="command">Generate another trace:
+        <code>npx tsx src/monoflow2.ts "your text" --cycles=6 --trace-json=trace.json</code>
+      </p>
+    </section>
+
+    <section class="paper" aria-labelledby="paper-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">The paper</p>
+          <h2 id="paper-title">What the traversal sees</h2>
+        </div>
+        <div class="cycle-stamp"><span>cycle</span><strong id="cycle-number">0</strong></div>
+      </div>
+
+      <div class="strip-scroll">
+        <div id="letter-stage" class="letter-stage">
+          <div id="token-layer" class="token-layer"></div>
+          <div id="letters" class="letters"></div>
+          <div id="indices" class="indices"></div>
+        </div>
+      </div>
+
+      <div class="transport">
+        <button id="previous" class="round-button" aria-label="Previous cycle">←</button>
+        <button id="play" class="play-button" aria-label="Play cycles">▶ <span>play</span></button>
+        <button id="next" class="round-button" aria-label="Next cycle">→</button>
+        <input id="cycle-slider" type="range" min="0" max="0" value="0" aria-label="Cycle">
+        <p id="cycle-caption" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="workbench">
+      <article class="decision-card">
+        <div class="section-heading compact">
+          <div>
+            <p class="eyebrow">This step</p>
+            <h2>Why it changed</h2>
+          </div>
+          <span id="degree-badge" class="degree-badge"></span>
+        </div>
+        <div id="decision"></div>
+      </article>
+
+      <article class="graph-card">
+        <div class="section-heading compact">
+          <div>
+            <p class="eyebrow">Stable ledger</p>
+            <h2>Edges without the shuffle</h2>
+          </div>
+          <div class="segmented" role="group" aria-label="Graph mode">
+            <button data-mode="current" class="active">now</button>
+            <button data-mode="memory">memory</button>
+          </div>
+        </div>
+        <p id="graph-help" class="muted">Only edges in this traversal. Rows stay put between cycles.</p>
+        <div id="edge-ledger" class="edge-ledger"></div>
+      </article>
+    </section>
+
+    <section class="legend">
+      <span><i class="swatch selected"></i> selected</span>
+      <span><i class="swatch created"></i> newly created</span>
+      <span><i class="swatch quiet"></i> unchanged</span>
+      <span><i class="line-swatch"></i> current edge</span>
+      <span><i class="line-swatch historical"></i> remembered edge</span>
+    </section>
+  </main>
+
+  <footer>
+    <p>Trace schema <span id="schema-version">—</span> ·
+      <span id="run-summary"></span></p>
+  </footer>
+
+  <div id="error" class="error" role="alert" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>

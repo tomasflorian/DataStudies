@@ -1,0 +1,14 @@
+#! scope party@5
+#! vocabulary party-planning
+#! <NOUN> party-plan hint host person place
+#! <VERB> title host guest venue
+# A party plan. Here a host is a person; in IT a host is a machine.
+# Same word, other language: the language tag keeps them apart.
+# on	id	tags	regex
+file	hint	hint	^eoe: party-plan$
+file	party-plan	party-plan	(?<=^eoe: party-plan\n)[\s\S]+
+party-plan	-	title	^(?!\w+: ).+$
+party-plan	host	host	^host: (.+)$
+party-plan	person	person host	^host: (.+)$
+party-plan	person	person guest	^guest: (.+)$
+party-plan	place	place venue	^venue: (.+)$

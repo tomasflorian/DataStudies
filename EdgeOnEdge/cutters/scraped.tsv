@@ -1,0 +1,13 @@
+#! scope scraped@6
+#! vocabulary default
+#! <NOUN> scrape hint found-pair
+#! <VERB> first second
+# Pairs a scraper found next to each other and could not name:   svc-deploy hunter2
+# All it knows is which came first, so that is all it says. It speaks no language of
+# its own, so its finds are tagged "default".
+# on	id	tags	regex
+file	hint	hint	^eoe: scrape$
+file	scrape	scrape	(?<=^eoe: scrape\n)[\s\S]+
+scrape	found-pair	found-pair	^.+$
+found-pair	-	first	^(\S+)
+found-pair	-	second	(\S+)$

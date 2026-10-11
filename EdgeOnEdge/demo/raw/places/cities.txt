@@ -1,0 +1,8 @@
+eoe: prose
+paris is a city
+the city is old
+
+tokyo is a city
+the city is new
+
+a city is a place
