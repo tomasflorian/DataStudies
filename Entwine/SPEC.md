@@ -307,8 +307,8 @@ run is the files in and the forest out, and a view is the forest in and the answ
 Entwine follows [EdgeOnEdge](../README.md), which stores everything as one pile of
 two-ended lines in which identical text is one node, so files join wherever they share a
 string. Before that, Reversible Function Graph stored function calls with numbered
-arguments, and its postmortem is why Entwine names the parts of what it finds with labels.
-Next to EdgeOnEdge, Entwine gives up:
+arguments, and the trouble it had with them is why Entwine names the parts of what it
+finds with labels. Next to EdgeOnEdge, Entwine gives up:
 
 - **Joins by default.** Equal strings were one node; now they are a jump away, and a view
   decides whether to take it.

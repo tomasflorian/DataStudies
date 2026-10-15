@@ -30,28 +30,23 @@ public static class Atoms
 {
     private static readonly List<string[]> Acts = [];
 
-    /// Say what happened: the function, its arguments, and the answer last.
+    /// Say what happened: the function, its one input, and the answer.
     ///
     ///     Atoms.Log("cost", rec, 760m)              cost(rec) = 760
-    ///     Atoms.Log("hasLetter", "cat", "z", false) hasLetter(cat,z) = false
+    ///
+    /// An atom is always three strings. A call with several answers is logged
+    /// once per answer.
     ///
     /// A null answer writes NOTHING. Not a blank, not a placeholder — the graph
     /// never learns the question was asked. Most strings are not an IP, and a
     /// file should grow with what was found rather than with what was asked.
-    public static void Log(string fn, params object?[] rest)
+    public static void Log(string fn, object? input, object? output)
     {
-        if (rest.Length < 2) throw new ArgumentException("an atom needs arguments and an answer", nameof(rest));
-        if (rest[^1] is null) return;
-
-        var atom = new string[rest.Length + 1];
-        atom[0] = fn;
-        for (var i = 0; i < rest.Length; i++)
-        {
-            var s = Text(rest[i]);
-            if (s is null) return;      // an argument nobody can write down
-            atom[i + 1] = s;
-        }
-        Acts.Add(atom);
+        if (output is null) return;
+        var i = Text(input);
+        var o = Text(output);
+        if (i is null || o is null) return;     // a value nobody can write down
+        Acts.Add([fn, i, o]);
     }
 
     /// Run it and record it. For when you want the call written down rather than
@@ -115,9 +110,10 @@ public static class Atoms
         {
             var result = method!.Invoke(Target, args);
             // A method name is a function name, lowercased the way the rest of
-            // the graph spells them.
+            // the graph spells them. Only one-argument methods are recorded: an
+            // atom has exactly one input.
             var fn = char.ToLowerInvariant(method.Name[0]) + method.Name[1..];
-            Log(fn, [.. args ?? [], result]);
+            if (args is { Length: 1 }) Log(fn, args[0], result);
             return result;
         }
     }

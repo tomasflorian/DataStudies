@@ -51,6 +51,7 @@ var typeArg = Array.IndexOf(args, "--type") is var i && i >= 0 && i + 1 < args.L
 
 var blobs = new List<string>();
 var seen = new HashSet<string>();
+var broken = 0;
 
 string? line;
 while ((line = Console.In.ReadLine()) is not null)
@@ -59,8 +60,8 @@ while ((line = Console.In.ReadLine()) is not null)
 
     string[]? atom;
     try { atom = JsonSerializer.Deserialize<string[]>(line); }
-    catch (JsonException) { continue; }        // not an atom line; leave it alone
-    if (atom is null || atom.Length < 3) continue;
+    catch (JsonException) { broken++; continue; }   // not an atom line; skip it, say so
+    if (atom is null || atom.Length != 3) { broken++; continue; }
 
     // the selection, and the whole of it
     if (atom[0] != "isblob") continue;
@@ -90,4 +91,5 @@ foreach (var blob in blobs)
 
 PasswordRecords.Write(all);
 Console.Error.WriteLine($"{blobs.Count} blob(s) seen, {cut} cut");
+if (broken > 0) Console.Error.WriteLine($"skipped {broken} broken line(s)");
 return 0;

@@ -18,9 +18,6 @@
 //   paris         is a word in both texts, a CSV column value, a bare field, a
 //                 grouped field, a config value, a JSON key and a nested JSON
 //                 key. Eight functions land on it.
-//   the city text is cut twice at once — by membership, and by the indexed
-//                 functions that were the anti-scenario. Same words, two ways,
-//                 side by side, with nothing labelling which is preferred.
 //
 // Where two sections used one name for one thing it is written once and both
 // feed it — that is where most of the intersections come from. Where they used
@@ -36,6 +33,9 @@
 // it did afterwards. There is one primitive:
 //
 //   log("length", "paris", "5")     ->   ["length","paris","5"]
+//
+// Always three strings: the function, the one input, the one output. A call
+// with several answers is logged once per answer.
 //
 // No framework, no vocabulary to register, no handles, and NO CHAINING. An
 // earlier version had a class with def/value/apply that ran your functions for
@@ -57,7 +57,7 @@
 import { writeFileSync } from "node:fs";
 
 const acts: string[][] = [];
-const log = (fn: string, ...slots: string[]): void => { acts.push([fn, ...slots]); };
+const log = (fn: string, input: string, output: string): void => { acts.push([fn, input, output]); };
 
 // A record names its parts, so each name is a function. `read` hands the value
 // back because the caller usually wants it — that is a function returning its
@@ -73,14 +73,14 @@ function record(sep: string, fields: string[], guard?: (r: string) => boolean) {
   return { read, of: (rec: string) => { for (const f of fields) read(rec, f); } };
 }
 
-// A collection does not name its parts, so you ask about them by content: one
-// two-argument function handing back its own argument. There is no list node
-// between the text and the part. See the README, O1.
+// A collection does not name its parts, so its parts are the answers of one
+// function: a text with three sentences is three lines, same fn, same input.
+// There is no list node between the text and the part. See the README, O1.
 function membership(name: string, split: (s: string) => string[]) {
   return {
     of: (s: string): string[] => {
       const parts = split(s);
-      for (const part of parts) log(name, s, part, part);
+      for (const part of parts) log(name, s, part);
       return parts;
     },
   };
@@ -121,7 +121,6 @@ for (const w of [...anagrams, ...short]) {
   Chars.of(w);
 }
 for (const w of anagrams) {
-  for (const c of ["a", "c", "r", "t", "z"]) log("hasLetter", w, c, String(w.includes(c)));
   log("sort", reverse(w), sortChars(reverse(w)));
   log("length", upper(w), length(upper(w)));
 }
@@ -159,33 +158,6 @@ for (const text of [cityText, prose])
       Words.of(s);
 
 Words.of("paris france");
-
-// ---------------------------------------------------------------------------
-// text-index (anti-scenario) — the same text, cut by index instead.
-//
-// RENAMED: paragraph/sentence/word are taken above, so the indexed versions are
-// paragraphAt/sentenceAt/wordAt. They run over the SAME text and take the same
-// subject, so the two ways of cutting differ only in how they name the part —
-// which is the clearest look at why one is the scenario and the other is not.
-//
-// An index that finds nothing writes nothing, same as everywhere else.
-
-const at = (parts: string[], i: number): string | undefined => parts[i];
-
-for (let pi = 0; pi < 3; pi++) {
-  const para = at(cityText.split("\n\n"), pi);
-  if (para === undefined) continue;
-  log("paragraphAt", cityText, String(pi), para);
-  for (let si = 0; si < 2; si++) {
-    const sent = at(para.split("\n"), si);
-    if (sent === undefined) continue;
-    log("sentenceAt", para, String(si), sent);
-    for (let wi = 0; wi < 5; wi++) {
-      const word = at(sent.split(" "), wi);
-      if (word !== undefined) log("wordAt", sent, String(wi), word);
-    }
-  }
-}
 
 // ---------------------------------------------------------------------------
 // types — predicates. A function is what a type used to be.
@@ -333,8 +305,8 @@ for (const rec of [
 // The CLI's edit chain. An edit is one call: the old record in, the new record
 // out. Nothing is overwritten and no version is marked current, so the whole
 // chain stays in the pile and "the latest one" is a question a reader asks.
-log("edit", "carol|2026-08-27|projY|7", "carol|2026-08-27|projY|8", "carol|2026-08-27|projY|8");
-log("edit", "carol|2026-08-27|projY|8", "carol|2026-08-27|projX|8", "carol|2026-08-27|projX|8");
+log("edit", "carol|2026-08-27|projY|7", "carol|2026-08-27|projY|8");
+log("edit", "carol|2026-08-27|projY|8", "carol|2026-08-27|projX|8");
 for (const rec of ["carol|2026-08-27|projY|8", "carol|2026-08-27|projX|8"]) enter(rec);
 
 // ---------------------------------------------------------------------------
@@ -343,7 +315,7 @@ for (const rec of ["carol|2026-08-27|projY|8", "carol|2026-08-27|projX|8"]) ente
 // Its prose went through the functions above. What is left is the other five
 // formats, each with its own cutters, all arriving at paris and tokyo.
 
-const tag = (text: string, format: string) => log("hasFormat", text, format, format);
+const tag = (text: string, format: string) => log("hasFormat", text, format);
 
 tag(cityText, "prose");
 tag(prose, "prose");

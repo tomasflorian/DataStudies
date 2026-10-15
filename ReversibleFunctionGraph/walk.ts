@@ -12,12 +12,11 @@
 // and never nodes and edges, so the CLI and the browser agree by reading the
 // same file rather than by agreeing on a representation.
 
-import type { Atom } from "./expand.js";
+import { isAtom, type Atom } from "./expand.js";
 
 export interface Call {
   fn: string;
   subject: string;
-  extras: string[];
   result: string;
 }
 
@@ -54,19 +53,14 @@ export interface Table {
 
 // --- index -------------------------------------------------------------
 //
-// An atom is one call:  [fn, ...args, result]
+// An atom is one answer of one call:  [fn, input, output]
 //
-//   ["word","the|city|is|old","city","city"]
+//   ["word","the city is old","city"]
 //      fn       word
-//      subject  the|city|is|old     the first argument
-//      extras   ["city"]            the rest — part of the call's identity
-//      result   city
+//      subject  the city is old     the input
+//      result   city                the output
 //
-// The subject is args[0]. It used to be recovered by matching the inbound values
-// against the call's own text, longest match first, because the arrows carried
-// no order and the text was the only place order survived. That guessing is
-// gone: position in the atom says which argument was first, and nothing here
-// reads a call's text.
+// A call with several answers is several atoms with the same fn and subject.
 //
 // Calls are kept as objects rather than by id, so a pile holding the same atom
 // twice costs nothing — the duplicate produces an identical call, and every step
@@ -85,13 +79,8 @@ export function buildIndex(atoms: Atom[]): Index {
   };
 
   for (const atom of atoms) {
-    if (!Array.isArray(atom) || atom.length < 3) continue;
-    const app: Call = {
-      fn: atom[0],
-      subject: atom[1],
-      extras: atom.slice(2, -1),
-      result: atom[atom.length - 1],
-    };
+    if (!isAtom(atom)) continue;
+    const app: Call = { fn: atom[0], subject: atom[1], result: atom[2] };
     apps.push(app);
     under(bySubject, app.subject, app);
     under(byResult, app.result, app);
@@ -103,10 +92,7 @@ export function buildIndex(atoms: Atom[]): Index {
 // --- steps -------------------------------------------------------------
 //
 // fn()      go to what the call produced
-// rev_fn()  go to what it CONSUMED — the subject only. Extra arguments are
-//           part of the call's identity, not a place you can walk to, or
-//           rev_word() from "city" would hand back "city" itself, since
-//           sequence writes its selector as (list, part) => part.
+// rev_fn()  go to what it consumed
 
 export function stepFwd(index: Index, value: string, fn: string): string[] {
   const out: string[] = [];

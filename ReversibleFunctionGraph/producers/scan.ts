@@ -23,22 +23,17 @@
 // and that is the fixed point. Nobody scheduled those waves — they fall out of
 // re-running, which is the whole scheduling story.
 //
-// WHY NOT ONE ATOM PER FINDING, ipInNote(note) = "10.20.30.1"
+// ONE LINE PER FINDING. A note with two IPs is two lines, same function, same
+// note:
 //
-// A note with two IPs would give one call with two answers out — the shape this
-// graph uses for a DISAGREEMENT. So a finding is written with the thing found as
-// an argument:
+//   ["ipIn", <the note>, "10.20.30.1"]
+//   ["ipIn", <the note>, "10.20.30.7"]
 //
-//   ["ipIn", <the note>, "10.20.30.1", "10.20.30.1"]
+// Walk `ipIn` forward from a note to reach its IPs; `rev_ipIn` back from an IP
+// to reach the notes it sits in.
 //
-// Each distinct finding is a distinct call, and the function hands back its own
-// argument — the shape isIP and hasFormat already use. Walk `ipIn` forward from
-// a note to reach its IPs; `rev_ipIn` back from an IP to reach the notes it sits
-// in. Same trick as O2's one-step selector in the README.
-//
-// `host` is different and is written the plain way, host(url) = the host,
-// because a URL has exactly one host. One answer, one arrow out, no argument
-// needed. It is also where the collisions are: two different addresses,
+// `host` has one answer, because a URL has exactly one host. It is also where
+// the collisions are: two different addresses,
 //
 //   alice@larkfield.example        in one record
 //   pixvault@larkfield.example     in another
@@ -57,7 +52,7 @@
 // missing, so a bigger pile can only get you more and the order cutters run in
 // does not change where they land.
 
-import { parse, format } from "../expand.js";
+import { parse, format, brokenNote } from "../expand.js";
 import type { Atom } from "../expand.js";
 
 // --- the recognisers ---------------------------------------------------------
@@ -72,6 +67,11 @@ const trimTail = (s: string): string => s.replace(/[.,;:!?)\]}]+$/, "");
 
 const find = (text: string, re: RegExp): string[] =>
   [...new Set((text.match(re) ?? []).map(trimTail))].filter(Boolean);
+
+// One function per name, each returning every answer it has.
+const ipIn = (note: string): string[] => find(note, IP);
+const emailIn = (note: string): string[] => find(note, EMAIL);
+const urlIn = (note: string): string[] => find(note, URL);
 
 // The host of a URL or of an address. One answer or none.
 function hostOf(value: string): string | null {
@@ -90,14 +90,13 @@ const text = await new Promise<string>(resolve => {
   process.stdin.on("end", () => resolve(buf));
 });
 
-let held: Atom[];
-try { held = parse(text); }
-catch (e) { console.error("not atom lines:", (e as Error).message); process.exit(1); }
+const { atoms: held, broken } = parse(text);
+if (broken.length) console.error(brokenNote(broken, "scan"));
 
 // The selection, and the whole of it. `producedBy` is one hop, and the hop is
 // sitting in slot 0 of the line — no graph needed to read it.
 const producedBy = (fn: string): string[] =>
-  [...new Set(held.filter(a => a[0] === fn).map(a => a[a.length - 1]))];
+  [...new Set(held.filter(a => a[0] === fn).map(a => a[2]))];
 
 const notes = producedBy("Notes");
 const found = [...new Set([...producedBy("emailIn"), ...producedBy("urlIn")])];
@@ -112,9 +111,9 @@ const add = (atom: Atom): void => {
 };
 
 for (const note of notes) {
-  for (const ip of find(note, IP)) add(["ipIn", note, ip, ip]);
-  for (const email of find(note, EMAIL)) add(["emailIn", note, email, email]);
-  for (const url of find(note, URL)) add(["urlIn", note, url, url]);
+  for (const ip of ipIn(note)) add(["ipIn", note, ip]);
+  for (const email of emailIn(note)) add(["emailIn", note, email]);
+  for (const url of urlIn(note)) add(["urlIn", note, url]);
 }
 
 for (const value of found) {

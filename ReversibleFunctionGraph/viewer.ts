@@ -197,18 +197,53 @@ function build(): void {
   paint(true);
 }
 
+// HUBS. A node with hundreds of edges pulls the whole picture into one knot.
+// Hiding the top N by edge count shows what is around them. Drawing only: the
+// hubs are still in the graph, the triples pane and the walk. 0 hides nothing.
+let hideHubs = 0;
+let hidden = new Set<string>();
+
+function topHubs(n: number): Set<string> {
+  if (n <= 0) return new Set();
+  return new Set(data.nodes.map(x => x.id)
+    .sort((a, b) => degree(b) - degree(a) || (a < b ? -1 : a > b ? 1 : 0))
+    .slice(0, n));
+}
+
+const shown = (): ViewNode[] => data.nodes.filter(n => !hidden.has(n.id));
+
+const degree = (id: string): number =>
+  (inTo.get(id)?.length ?? 0) + (outOf.get(id)?.length ?? 0);
+
+// Listed the way the picture labels them, with the edge count that put each one
+// in the top N.
+function showHubs(): void {
+  const names = [...hidden].map(id => {
+    const node = nodeAt.get(id);
+    const label = node ? shortLabel(node.label).replace(/\s+/g, " ").slice(0, 40) : id;
+    return `${label} (${degree(id)})`;
+  });
+  el("hubnames").textContent = names.length ? "hidden: " + names.join(", ") : "";
+}
+
 /// Push the derived graph into vis. `whole` replaces everything, which is what a
 /// changed source calls for; otherwise only what is missing is added, so a
-/// streaming arrival does not throw away the layout.
+/// streaming arrival does not throw away the layout — unless the arrivals change
+/// which nodes are the top hubs, which needs a full redraw.
 function paint(whole: boolean): void {
   if (!network) return;
+  const next = topHubs(hideHubs);
+  if (next.size !== hidden.size || [...next].some(id => !hidden.has(id))) whole = true;
+  hidden = next;
+  showHubs();
   if (whole) { nodes.clear(); edges.clear(); }
   const have = new Set<string>(whole ? [] : nodes.getIds());
   const haveE = new Set<string>(whole ? [] : edges.getIds());
-  nodes.add(data.nodes.filter(n => !have.has(n.id)).map(n => ({
+  nodes.add(shown().filter(n => !have.has(n.id)).map(n => ({
     id: n.id, label: drawLabel(n), color: base.get(n.id), shape: SHAPES[n.role],
   })));
   edges.add(data.edges
+    .filter(e => !hidden.has(e.from) && !hidden.has(e.to))
     .map(e => ({ id: e.from + " " + e.to + " " + e.slot, from: e.from, to: e.to, slot: e.slot }))
     .filter(e => !haveE.has(e.id)));
   render();
@@ -228,7 +263,7 @@ const seeds = new Set<string>();
 function render(): void {
   if (!network) return;
   if (seeds.size === 0) {
-    nodes.update(data.nodes.map(n => ({
+    nodes.update(shown().map(n => ({
       id: n.id, color: base.get(n.id), font: { color: "#fff" }, borderWidth: 1,
     })));
     edges.update(edges.getIds().map((id: string) => ({ id, color: "#888" })));
@@ -240,7 +275,7 @@ function render(): void {
     for (const e of inTo.get(s) ?? []) { keep.add(e.from); hot.add(edgeId(e)); }
     for (const e of outOf.get(s) ?? []) { keep.add(e.to); hot.add(edgeId(e)); }
   }
-  nodes.update(data.nodes.map(n => keep.has(n.id)
+  nodes.update(shown().map(n => keep.has(n.id)
     ? { id: n.id, color: base.get(n.id), font: { color: "#fff" },
         borderWidth: seeds.has(n.id) ? 4 : 1 }
     : { id: n.id, color: DIM, font: { color: DIM_FONT }, borderWidth: 1 }));
@@ -272,7 +307,7 @@ const selected = (): string | null => (seeds.size ? [...seeds][seeds.size - 1] :
 
 const roleOf = (id: string): Role => nodeAt.get(id)?.role ?? "value";
 // A node's ID is not for reading. A value's id happens to be its text, but a
-// call's is its argument list, so everything shown to a person goes through the
+// call's is its function and input, so everything shown to a person goes through the
 // label and everything that navigates goes through the id.
 const show = (nid: string): string => nodeAt.get(nid)?.label ?? nid;
 
@@ -297,21 +332,20 @@ function renderTriples(id: string | null): string {
   const head = `<div class="head">${dot(roleOf(id))}<b>${esc(show(id))}</b>` +
     `<span class="role">${roleOf(id)}</span></div>`;
 
-  const resultOf = (app: string): string | undefined =>
-    (outOf.get(app) ?? []).find(e => e.slot === "result")?.to;
+  // A call can have several answers — one output edge per atom line.
+  const outputsOf = (app: string): string[] =>
+    (outOf.get(app) ?? []).filter(e => e.slot === "output").map(e => e.to);
 
   const triple = (app: string): string => {
-    const res = resultOf(app);
+    const outs = outputsOf(app);
     return `<li>${chip(app)}<span class="arrow">→</span>` +
-      (res === undefined ? `<span class="empty">?</span>` : chip(res)) + `</li>`;
+      (outs.length ? outs.map(chip).join(" ") : `<span class="empty">?</span>`) + `</li>`;
   };
   const triples = (apps: string[]): string => apps.length
     ? apps.map(triple).join("") : `<li class="empty">none</li>`;
 
   if (isApp(id)) {
-    // Inputs in slot order with the slot named — which is what an atom knew all
-    // along and the old picture could not say: which argument was first, and
-    // which arrow was the function.
+    // The function and the input, each with its slot named.
     const ins = (inTo.get(id) ?? []).slice()
       .sort((a, b) => (a.slot < b.slot ? -1 : a.slot > b.slot ? 1 : 0));
     const rows = ins.length
@@ -616,16 +650,27 @@ el("shorten").addEventListener("change", () => {
   try { localStorage.setItem(SHORTEN_KEY, shorten ? "1" : "0"); } catch { /* blocked storage */ }
   // Labels only. Nothing is re-derived and no node is added or removed, so the
   // layout does not move and the selection stands.
-  if (network) nodes.update(data.nodes.map(n => ({ id: n.id, label: drawLabel(n) })));
+  if (network) nodes.update(shown().map(n => ({ id: n.id, label: drawLabel(n) })));
+});
+
+el("hubs").addEventListener("input", () => {
+  const n = Math.max(0, Math.floor(Number((el("hubs") as HTMLInputElement).value) || 0));
+  if (n === hideHubs) return;
+  hideHubs = n;
+  following = true;
+  paint(true);
 });
 (el("shorten") as HTMLInputElement).checked = shorten;
 
 // ---- sources ----
 
+let brokenFromPile = 0;   // lines from the pile that were not atoms
+
 function status(): void {
   el("srcstat").textContent =
     `${serverAtoms.length} from the pile · ${pastedAtoms.length} pasted · ` +
-    `${atoms().length} in play`;
+    `${atoms().length} in play` +
+    (brokenFromPile ? ` · ${brokenFromPile} broken line(s) in the pile skipped` : "");
 }
 
 for (const input of document.querySelectorAll<HTMLInputElement>('input[name="src"]')) {
@@ -648,7 +693,7 @@ el("load").addEventListener("click", () => {
     if (!t) return;
     try {
       const a: unknown = JSON.parse(t);
-      if (Array.isArray(a) && a.length >= 3 && a.every(s => typeof s === "string")) out.push(a as EXPAND.Atom);
+      if (EXPAND.isAtom(a)) out.push(a);
       else bad.push(i + 1);
     } catch { bad.push(i + 1); }
   });
@@ -693,7 +738,13 @@ function queue(atom: EXPAND.Atom): void {
 }
 
 const stream = new EventSource("/atoms");
-stream.onmessage = e => queue(JSON.parse(e.data as string) as EXPAND.Atom);
+// A broken line in the pile is skipped and counted in the status line.
+stream.onmessage = e => {
+  let a: unknown;
+  try { a = JSON.parse(e.data as string); } catch { a = null; }
+  if (EXPAND.isAtom(a)) queue(a);
+  else { brokenFromPile++; status(); }
+};
 stream.addEventListener("reset", () => location.reload());
 stream.onerror = () => { if (!serverAtoms.length) status(); };
 

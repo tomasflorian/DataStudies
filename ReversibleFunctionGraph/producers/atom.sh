@@ -4,10 +4,9 @@
 #   ./producers/atom.sh length cat 3
 #   ["length","cat","3"]
 #
-#   ./producers/atom.sh hasLetter cat z false | ./merge.sh pile.atoms
+#   ./producers/atom.sh upper cat CAT | ./merge.sh pile.atoms
 #
-# The function, then its arguments, then the answer. Everything between the first
-# and the last is an argument, so this takes any arity without being told.
+# The function, then its input, then the answer. Exactly three, always.
 #
 # There is nothing else to it, and that is the point: a person who has noticed
 # something can write it down without a program, a schema, or permission. What
@@ -16,8 +15,8 @@
 # check that an answer is right, only that it is shaped like an atom.
 set -e
 
-if [ $# -lt 3 ]; then
-  echo "usage: atom.sh <fn> <arg>... <result>" >&2
+if [ $# -ne 3 ]; then
+  echo "usage: atom.sh <fn> <input> <output>" >&2
   echo "   eg: atom.sh length cat 3" >&2
   exit 1
 fi

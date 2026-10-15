@@ -51,6 +51,11 @@ storage to reading.
   reading can be decided differently by the next reader.
 - **Keep the evidence; interpretation is disposable.** The raw text is kept whole, and every
   reading of it can be thrown away and redone.
+- **What a cut leaves over is usually the relations.** A child cuts the black dots out of a page,
+  puts them in a jar, and throws the white away: "I organized them." Every dot is kept; the
+  picture is gone, because the picture was where the dots were. If anything could have been
+  thrown away, it was the dots: the holes in the paper still say where every one of them was.
+  Keep what a cut leaves over; the next reader's figure may be this reader's ground.
 - **A tree is an act of reading, not a classification of the world.** A tree is how one hand
   holds one reach into the sea. There is no master tree over the others.
 - **Adding data only adds.** A method that must reread the whole corpus before it can say
@@ -61,6 +66,9 @@ storage to reading.
   everyone else's language, replaces it.
 - **Boundaries are relative to an observer.** That is not a weakness to apologise for. It is the
   frame of reference made explicit.
+- **Required for what?** A record is never incomplete in itself, only unfit for a particular use.
+  Unfit records are not wrong, and are not deleted or massaged to fit; they wait, as written, for
+  a use they do fit.
 - **Attempts are sticks.** A stick is for fishing, not for mounting on the wall. When a better
   stick turns up, the old one is thrown away; what it caught is kept.
 

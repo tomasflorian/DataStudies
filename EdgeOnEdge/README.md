@@ -156,9 +156,9 @@ EdgeOnEdge continues a line of experiments:
 
 **Reversible Function Graph** recorded function calls as strings and derived a graph
 that readers could walk forwards and backwards. Its walk exposed a limit: arguments
-beyond the first could be stored without ever being reachable in a table. The
-[postmortem](../ReversibleFunctionGraph/POSTMORTEM.md)
-explains how that led to a simpler unit.
+beyond the first could be stored without ever being reachable in a table. Its
+[history](../ReversibleFunctionGraph/README.md#history) explains how that led to a
+simpler unit. It was later revived with exactly three strings per call.
 
 **StringWalk** made each fact three strings — `[value, relation, value]` — and built
 readings by walking through shared values. Kinds and verbs described each relation.

@@ -22,7 +22,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as WALK from "./walk.js";
-import type { Atom } from "./expand.js";
+import { parse, brokenNote } from "./expand.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -35,8 +35,8 @@ if (!file || !anchor) {
 
 const p = existsSync(file) ? file : join(here, "snapshots", file + ".atoms");
 if (!existsSync(p)) { console.error("no such atom file: " + p); process.exit(1); }
-const atoms: Atom[] = readFileSync(p, "utf8")
-  .split("\n").filter(l => l.trim()).map(l => JSON.parse(l) as Atom);
+const { atoms, broken } = parse(readFileSync(p, "utf8"));
+if (broken.length) console.error(brokenNote(broken, p));
 const index = WALK.buildIndex(atoms);
 
 if (!WALK.anchorFunctions(index).includes(anchor)) {

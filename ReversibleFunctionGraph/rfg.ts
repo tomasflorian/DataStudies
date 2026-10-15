@@ -22,6 +22,7 @@
 import { existsSync, readFileSync, writeFileSync, statSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import config, { type Input, type Tool } from "./rfg.config.js";
+import { isAtom, parse as parseAtoms, brokenNote } from "./expand.js";
 
 const usage = `usage:
   ./rfg run [TOOL [ARGS...]] [--only NAMES] [--pile FILE] [--fresh] [-v]
@@ -91,8 +92,8 @@ function atomLines(text: string, from: string): string[] {
   for (const line of lines) {
     let atom: unknown;
     try { atom = JSON.parse(line); } catch { throw new Error(`${from} wrote non-JSON: ${line}`); }
-    if (!Array.isArray(atom) || atom.length < 3 || !atom.every(x => typeof x === "string"))
-      throw new Error(`${from} wrote a malformed atom: ${line}`);
+    if (!isAtom(atom))
+      throw new Error(`${from} wrote a malformed atom (an atom is exactly three strings): ${line}`);
   }
   return lines;
 }
@@ -115,8 +116,17 @@ function invoke(name: string, extra: string[], input: string | undefined, loud: 
   return atomLines(r.stdout, name);
 }
 
+// A tool's output is held to the format strictly, so a broken line never gets
+// into the pile from here. The pile itself is read leniently: a line that is
+// already there and broken is skipped and reported, and the rest still counts.
 const count = (path: string): number =>
-  existsSync(path) ? atomLines(readFileSync(path, "utf8"), path).length : 0;
+  existsSync(path) ? parseAtoms(readFileSync(path, "utf8")).atoms.length : 0;
+
+function reportBroken(path: string): void {
+  if (!existsSync(path)) return;
+  const { broken } = parseAtoms(readFileSync(path, "utf8"));
+  if (broken.length) console.error("  " + brokenNote(broken, path));
+}
 
 function merge(path: string, incoming: string[]): number {
   const before = count(path);
@@ -239,6 +249,7 @@ async function main(): Promise<void> {
   await feed(o);
   catchUp(o.pile, names, o.loud);
   console.log(said(o.pile, `${count(o.pile)} atoms`));
+  reportBroken(o.pile);
   if (o.action === "run") return;
 
   // WATCH. The pile is a file, so "something arrived" is the file changing —

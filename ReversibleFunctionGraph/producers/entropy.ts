@@ -33,7 +33,7 @@
 //
 // TWO FUNCTIONS OUT:
 //
-//   ["wordIn",  <the value>, "Kp9mVt2Xz7Lq4Rb", "Kp9mVt2Xz7Lq4Rb"]
+//   ["wordIn",  <the value>, "Kp9mVt2Xz7Lq4Rb"]
 //   ["entropy", "Kp9mVt2Xz7Lq4Rb", "4.0"]
 //
 // THE SCORE IS ROUNDED TO THE NEAREST HALF BIT, AND THAT IS THE WHOLE POINT.
@@ -45,15 +45,15 @@
 // The threshold below still reads the exact score, so the knob stays continuous
 // while what gets written down is coarse.
 //
-// wordIn is membership, so a value with forty interesting words is forty calls
-// and never one call with forty answers. entropy is the plain form — a word has
-// one score — so the walk table can carry it as a column and sort on it.
+// wordIn has an answer per word, so a value with forty words is forty lines.
+// entropy has one answer per word — a word has one score — so the walk table can
+// carry it as a column and sort on it.
 //
 // Splitting a value into words is arguably its own cutter, and if anything else
 // ever wants words it should become one. It is here because nothing else wants
 // them yet.
 
-import { parse, format } from "../expand.js";
+import { parse, format, brokenNote } from "../expand.js";
 import type { Atom } from "../expand.js";
 
 const argv = process.argv.slice(2);
@@ -84,12 +84,11 @@ const text = await new Promise<string>(resolve => {
   process.stdin.on("end", () => resolve(buf));
 });
 
-let held: Atom[];
-try { held = parse(text); }
-catch (e) { console.error("not atom lines:", (e as Error).message); process.exit(1); }
+const { atoms: held, broken } = parse(text);
+if (broken.length) console.error(brokenNote(broken, "entropy"));
 
 const values = [...new Set(
-  held.filter(a => FROM.includes(a[0])).map(a => a[a.length - 1]),
+  held.filter(a => FROM.includes(a[0])).map(a => a[2]),
 )];
 
 const out: Atom[] = [];
@@ -104,7 +103,7 @@ for (const value of values) {
   for (const word of new Set(value.split(/\s+/).filter(Boolean))) {
     looked++;
     const score = entropy(word);
-    add(["wordIn", value, word, word]);
+    add(["wordIn", value, word]);
     add(["entropy", word, (Math.round(score * 2) / 2).toFixed(1)]);
   }
 }

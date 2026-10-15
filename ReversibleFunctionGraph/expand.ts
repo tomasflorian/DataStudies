@@ -1,19 +1,17 @@
 // expand.ts — atoms in, nodes and edges out. The one expansion.
 //
-// An atom is one call, flat, all strings:  [fn, ...args, result]
-// Length is at least 3. Slot 0 is the function, the last slot is the result,
-// everything between is the arguments in order. See the README.
+// An atom is one answer of one call, exactly three strings:  [fn, input, output]
+// See the README.
 //
-//   ["hasLetter","cat","z","false"]
+//   ["word","paris is a city","city"]
 //
-//     nodes   hasLetter    a function
-//             cat, z       values
-//             the atom     a call
-//             false        a value
-//     edges   hasLetter -> call    slot: fn
-//             cat       -> call    slot: arg0
-//             z         -> call    slot: arg1
-//             call      -> false   slot: result
+//     nodes   word               a function
+//             paris is a city    a value
+//             the atom           a call
+//             city               a value
+//     edges   word            -> call    slot: fn
+//             paris is a city -> call    slot: input
+//             call            -> city    slot: output
 //
 // THE LOAD-BEARING BIT: expand reads only the atom. It never consults the graph
 // built so far. Everything else — that merging is concatenation, that order and
@@ -43,21 +41,28 @@ export interface Expanded {
   problems: string[];
 }
 
-export function identity(atom: Atom): string[] {
-  return atom.slice(0, -1);
+// The atom is a 3-string array of strings — the one test, shared by everything
+// that reads atoms.
+export function isAtom(x: unknown): x is Atom {
+  return Array.isArray(x) && x.length === 3 && x.every(s => typeof s === "string");
 }
 
-// A call has no name. Its identity is its own contents, compared element by
-// element — nothing is ever joined and read back apart. vis-network wants a
-// string id, so one is minted here from the identity: canonical because JSON
-// escapes everything, and never displayed, never written to a file, never
-// merged. The LABEL is the readable form and nothing parses it.
+export function identity(atom: Atom): string[] {
+  return atom.slice(0, 2);
+}
+
+// A call is a function and an input. A call with several answers is one call
+// node with several output edges — one per line. It has no name: its identity
+// is its own contents, compared element by element. vis-network wants a string
+// id, so one is minted here from the identity: canonical because JSON escapes
+// everything, and never displayed, never written to a file, never merged. The
+// LABEL is the readable form and nothing parses it.
 export function callId(atom: Atom): string {
   return JSON.stringify(identity(atom));
 }
 
 export function callLabel(atom: Atom): string {
-  return atom[0] + "(" + atom.slice(1, -1).join(",") + ")";
+  return atom[0] + "(" + atom[1] + ")";
 }
 
 const cmp = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
@@ -83,13 +88,11 @@ export function expand(atoms: Atom[]): Expanded {
   };
 
   for (const atom of atoms) {
-    if (!Array.isArray(atom) || atom.length < 3 || atom.some(s => typeof s !== "string")) {
+    if (!isAtom(atom)) {
       problems.push("not an atom: " + JSON.stringify(atom));
       continue;
     }
-    const fn = atom[0];
-    const args = atom.slice(1, -1);
-    const result = atom[atom.length - 1];
+    const [fn, input, output] = atom;
     const id = callId(atom);
 
     if (!calls.has(id))
@@ -100,9 +103,10 @@ export function expand(atoms: Atom[]): Expanded {
     // in one call and a value in another; both lives hang off the one node.
     value(fn).isFn = true;
     edge(fn, id, "fn");
-    args.forEach((a, i) => { value(a); edge(a, id, "arg" + i); });
-    value(result);
-    edge(id, result, "result");
+    value(input);
+    edge(input, id, "input");
+    value(output);
+    edge(id, output, "output");
   }
 
   // Values are keyed by text and calls by their argument list — two different
@@ -119,14 +123,30 @@ export function expand(atoms: Atom[]): Expanded {
   return { nodes, edges: out, problems };
 }
 
-// one atom per line, blank lines skipped — see the README, "The atom"
-export function parse(text: string): Atom[] {
-  const out: Atom[] = [];
-  for (const line of text.split("\n")) {
+// One atom per line, blank lines skipped — see the README, "The atom". A line
+// that is not an atom (a write cut off mid-line, a stray edit) is skipped and
+// reported by line number, so one bad line costs that line and not the pile.
+export interface Parsed {
+  atoms: Atom[];
+  broken: number[];   // 1-based line numbers
+}
+
+export function parse(text: string): Parsed {
+  const atoms: Atom[] = [];
+  const broken: number[] = [];
+  text.split("\n").forEach((line, i) => {
     const t = line.trim();
-    if (t) out.push(JSON.parse(t) as Atom);
-  }
-  return out;
+    if (!t) return;
+    let a: unknown;
+    try { a = JSON.parse(t); } catch { broken.push(i + 1); return; }
+    if (isAtom(a)) atoms.push(a); else broken.push(i + 1);
+  });
+  return { atoms, broken };
+}
+
+export function brokenNote(broken: number[], where: string): string {
+  const shown = broken.slice(0, 10).join(", ") + (broken.length > 10 ? ", …" : "");
+  return `${where}: skipped ${broken.length} broken line(s): ${shown}`;
 }
 
 export function format(atoms: Atom[]): string {

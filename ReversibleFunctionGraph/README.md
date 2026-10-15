@@ -1,114 +1,87 @@
 # Reversible Function Graph
 
-> **Superseded by [StringWalk](../StringWalk/).**
-> This project is no longer developed. [POSTMORTEM.md](POSTMORTEM.md) says why it ended.
 
 ## What this is
 
-You run a function. The call gets written down as one line:
+You run a function, and the call gets written down as one line:
 
 ```
-["length","paris","5"]
+["year","2026-08-25","2026"]
 ```
 
-A function, its arguments, its answer. That line is an **atom**, and atoms are
-the only thing this project stores.
+A function, its input, its answer. That line is an **atom**, and atoms are all
+this project stores.
 
-A **graph** is what a reader makes of them. Expanding that one atom gives four
-boxes and three arrows:
+A **graph** is what a reader makes of them. Expanding that atom gives four boxes
+and three arrows:
 
 ```
-length ──fn────▶ (the call) ──result──▶ 5
-paris ──arg0───▶ (the call)
+year ─────────fn─────▶ (the call) ──output──▶ 2026
+2026-08-25 ──input───▶ (the call)
 ```
 
-Three of those boxes are ordinary things: `paris` is a piece of text, `5` is a
-piece of text, `length` is the function — which is also just a node you can point
-at. The fourth is the call itself, sitting between the input and the answer.
+`2026-08-25` and `2026` are pieces of text, `year` is the function, and the
+fourth box is the call itself, sitting between the input and the answer. Because
+the call is a node, three questions become the same kind of question — follow
+arrows:
 
-Because the call is a node, three different questions become the same kind of
-question — follow arrows:
+- What year is `2026-08-25`? Follow forward.
+- Which dates fall in `2026`? Follow backward.
+- Where has `year` been used? Follow forward from `year`.
 
-- What is the length of `paris`? Follow forward.
-- What produced `5`? Follow backward.
-- Everywhere `length` has ever been used? Follow forward from `length`.
-
-The graph is never stored anywhere. It is derived, every time somebody looks.
+The graph is not stored. It is derived each time somebody looks.
 
 ## The claim being tested
 
-**Writing the call down is enough.**
+**Writing the call down is enough** — enough that you don't have to declare the
+shape of your data before it arrives. No tables, no types, no record layout, no
+"which version is current". A reader works it out afterwards by following arrows.
 
-Enough for what: enough that you never have to declare the shape of your data
-before the data arrives. No tables to define, no types to declare, no record
-layout, no version numbers, no "which one is current". A reader works it out
-afterwards by following arrows.
+- **Forwards.** The record of *what function was run on what* has the three parts
+  a table has: the function is the column, the input is the row, the answer is
+  the cell.
+- **Backwards.** The call sits between the input and the answer as a node you can
+  stop on, so you can walk back from an answer.
 
-The claim goes both ways.
-
-- **Forwards.** An engine that knows nothing about your data's shape can still
-  carry any shape you like, because the record of *what function was run on what*
-  has the three parts a table has. The function is the column. What you ran it on
-  is the row. The answer is the cell.
-- **Backwards.** Nothing you put in is lost, because the call sits between the
-  input and the answer as a node you can stop on.
-
-Not claiming there is no shape at all — the atom fixes a small one, and you bring
-more yourself in choosing which functions to run. And not claiming the graph is a
-list of everything that happened: ask the same question twice and the second time
-changes nothing.
+The atom does fix a small shape, and you bring more in choosing which functions to
+run. And the graph is not a log: asking the same question twice adds nothing.
 
 ## The atom
 
 ```
-[ fn, ...args, result ]
+[ fn, input, output ]
 ```
 
-At least three slots, all strings. Slot 0 is the function, the last slot is the
-result, everything between is the arguments **in order**.
+Exactly three strings.
 
 ```
-["length",    "cat",      "3"]
-["upper",     "cat",      "CAT"]
-["hasLetter", "cat", "z", "false"]
+["length", "cat",             "3"]
+["upper",  "cat",             "CAT"]
+["word",   "paris is a city", "city"]
+["word",   "paris is a city", "paris"]
 ```
 
-There is no role field and no label field: role falls out of position. An atom is
-a claim — this function, applied to these arguments, gave this answer. Usually it
-is the record of a call that ran, but nothing in the format says so, and a
-hand-written line is as good as a generated one.
+Role comes from position; there is no role or label field. An atom is a claim:
+this function, given this input, gave this answer. Usually it records a call that
+ran, but a hand-written line works just as well.
 
-**Identity is the atom without its last slot**, compared element by element.
+**A call with several answers is several lines.** The last two atoms above are
+one call, `word("paris is a city")`, and two of its answers.
 
-```
-identity(["hasLetter","cat","z","false"]) = ["hasLetter","cat","z"]
-```
+**A call's identity is its function and its input**, compared element by element
+rather than joined into a string, so there is no separator or quoting rule to get
+wrong.
 
-Not a string, not a hash, no canonical form for anybody to agree on — and an
-encoding is exactly the place two implementations can disagree. Nothing is ever
-joined into a string and read back apart, so there is no separator to reserve, no
-quoting rule, and no comma to get wrong.
+**A function that returns nothing writes nothing down.** Most strings are not an
+IP; recording each "no" would grow the file with what was *asked* rather than
+what was *found*.
 
-**A function that returns nothing writes nothing down.** No atom, no record that
-the question was asked. A null is a fact about a question rather than about the
-world, and the set of questions a function declines is unbounded — most strings
-are not an IP — so recording them would grow the file with what was *asked*
-instead of with what was *found*.
-
-**One atom per line**, plain text, no wrapper. Each line is one JSON array of
-strings, which every language can write with one call and a person can type
-without thinking about it. A single JSON document would only parse whole, so a
-file caught mid-write would stop being a graph at all; one atom per line means a
-truncated file loses its last partial line and stays valid. **Any prefix of the
-file is a smaller graph, never a damaged one.**
-
-Not a promise that the graph stays connected — two atoms sharing no values make
-two islands, which is normal. A promise that every island is made of whole facts.
-Disconnected is expected; incomplete is what atoms rule out.
+**One atom per line**, each a JSON array. A truncated file loses its last partial
+line and the rest still reads, so a prefix of the file is a smaller graph rather
+than a damaged one. Readers skip a line that isn't an atom and report its line
+number.
 
 ## Three roles
-
-Not client and server. Three jobs, touching one plain file:
 
 ```
 producers  ->  the pile  ->  readers
@@ -117,436 +90,182 @@ producers  ->  the pile  ->  readers
                  cutters
 ```
 
-A **producer** writes atoms. Anything that can print lines of text qualifies —
-any language, or a person typing observations by hand. Its insides can be as
-complicated as you like: millions of lines, internal state, whatever the work
-takes. What leaves it is atoms. A producer never coordinates with another
-producer and never has to dedupe — merging is idempotent, so emitting the same
-atom a thousand times is free.
+A **producer** writes atoms. Anything that can print lines qualifies — any
+language, or a person typing. It doesn't need to coordinate with other producers
+or dedupe its output: merging is idempotent, so writing the same atom twice costs
+nothing.
 
-Producers come in two kinds, and **the pile cannot tell them apart**:
+Producers come in two kinds, and the pile can't tell them apart:
 
-- **Intake.** Reads the world — a file, an export, a program's own work as it
-  happens. This is the only part of the system that can lose something, because
-  what it does not write down is nowhere. Its job is to lose nothing, not to
-  understand anything. `ingest.ts` is the smallest one there is: a whole document
-  in, one atom out, nothing looked at.
-- **Cutters.** Read the pile and write more atoms back into it. A cutter is a
-  reader and a producer at once, and that is the only place those two jobs meet.
-  Parsing something deeper is then a call you have not made yet rather than a
-  chance you missed: `producers/passwordrecord-cut` cuts records out of a
-  document already in the pile, `producers/scan.ts` reads the addresses and URLs
-  out of a notes field that intake left whole, `producers/entropy.ts` scores
-  every word it finds.
+- **Intake** reads the world: a file, an export, a program's own work. This is
+  where something can be lost, because what intake doesn't write down isn't
+  anywhere else. Its job is to keep things, not to understand them. `ingest.ts`
+  is the smallest: a whole document in, one atom out.
+- **Cutters** read the pile and write more atoms back. `passwordrecord-cut` cuts
+  records out of a document already held; `scan.ts` finds addresses and URLs in
+  a notes field; `entropy.ts` scores words by how generated they look.
 
-  `./rfg run` runs every one of them until a round adds nothing. There is no
-  order and no pass count: a cutter that only finds something once another has
-  run will find it on a later round, and any order lands in the same place —
-  which two rules are what buy:
+`./rfg run` re-runs the cutters until a round adds nothing. There is no fixed
+order or pass count; a cutter that needs another's output finds it on a later
+round. Two rules make that land in one place:
 
-  - **Pure**, so the loop terminates. A cutter that writes a timestamp or a
-    random id emits atoms nobody has held before on every round, so no round is
-    ever empty and `./rfg run` never stops.
-  - **Monotone**, so it lands in one place. A bigger pile may only ever get you
-    more, never less. Purity is not enough on its own: the loop never runs a
-    cutter twice on the same pile, it runs it on one growing underneath it.
+- **Pure**, so the loop ends. A cutter that writes a timestamp would add new
+  atoms every round.
+- **Monotone**, so the order doesn't matter. A bigger pile gets you more, not
+  less. In practice: don't let an absence change the answer. Writing
+  `["kind",x,"unknown"]` unless something better is already there would depend
+  on which cutter ran first.
 
-  The way to hold the second one is **never look at what is missing.** A cutter
-  writing `["kind",x,"unknown"]` unless something better is already tagged is
-  pure and still wrong — run it early and that atom goes in, run it late and it
-  never does, and atoms are never retracted. The graph would start depending on
-  the order the cutters ran in, which is exactly what this design paid for and
-  got. Skipping work already done is fine: the atom it would have written is
-  already there, so the output is unchanged. Letting an absence change the answer
-  is not.
+A producer may read the pile to decide **what to call**. It shouldn't read the
+pile to decide **what the answer is** — `parseNotes(doc)` should give the same
+answer whether the pile holds eight records or eight million.
 
-Which of the two a producer is comes from what it reads, so nobody has to
-declare it and nothing enforces it. **Merging** is the third job and belongs to
-neither: it is a set union over lines, and `merge.sh` is all of it.
-
-So the rule is narrower than "a producer never reads the pile", which is what
-this said before and was stronger than it needed to be:
-
-> A producer may read the pile to decide **what to call**.
-> It must never read the pile to decide **what the answer is**.
-
-`parseNotes(thatDocument)` has to give the same answer to anyone holding that
-value, whether their pile has eight records or eight million. Otherwise two
-people write the same call with two answers and the picture shows a fork where
-nobody disagreed.
-
-What the old rule was bought for — no coordination, no dedupe, merging is a union
-— comes from `expand` reading only the atom and from merge being a union. None of
-it ever depended on where a producer got its input.
-
-The **pile** is an inert file containing the union of what producers wrote. It has no
-vocabulary — it never runs a function and may not even have the function — so it
-cannot check that an answer is *right* or detect a contradiction. `pile.atoms`
-is the conventional file; `cat a.atoms b.atoms |
-sort -u` is the whole merge operation.
+The **pile** is a plain file holding the union of what producers wrote. It has
+no vocabulary and runs no functions, so it can't check an answer or spot a
+contradiction. Merging is `sort -u`, and `merge.sh` is that plus a lock.
 
 A **reader** expands the pile and draws or walks it. Everyone holding the same
-atoms holds the same graph, so the graph itself never has to travel.
-
-`serve.ts` is an optional read-only adapter around that file:
-
-```
-GET    /atoms   text/event-stream — replays the whole pile, then streams arrivals
-```
-
-It watches `pile.atoms` and reloads connected viewers after atomic file changes.
-It cannot ingest, merge, delete, or otherwise own the pile. `merge.sh` performs
-the byte-for-byte union locally.
+atoms holds the same graph, so the graph doesn't need to travel. `serve.ts` is an
+optional read-only adapter that streams the file to the viewer.
 
 ## Expanding
 
 `expand` turns one atom into nodes and edges:
 
 ```
-nodes:  fn                a function
-        each argument     a value
-        the atom itself   a call
-        the result        a value
+nodes:  fn        a function
+        input     a value
+        the call  fn and input together
+        output    a value
 
-edges:  fn      -> call     slot: fn
-        arg i   -> call     slot: arg0, arg1, ...
-        call    -> result   slot: result
+edges:  fn     -> call     slot: fn
+        input  -> call     slot: input
+        call   -> output   slot: output
 ```
 
-**The edges carry their slot.** This is where argument order survives expansion.
-Without it, `sentence(x, x)` draws the same arrow twice, the duplicate does
-nothing, and the call comes back with one argument where it had two.
+Edges carry their slot, so `isString(x) = x` keeps its input and its answer
+apart even though they are the same node. A call with several answers has one
+`output` edge per atom.
 
-Expanding a set of atoms is the union of expanding each one, nodes deduplicated
-by identity and edges by `(from, to, slot)`.
-
-**The load-bearing bit: `expand` reads only the atom.** It never consults the
-graph built so far. Everything below follows from that and nothing else.
-
-## Merging is concatenation
-
-Merging two atom files is gluing them together. There is no reconciliation step;
-`cat a.txt b.txt` is a complete and correct merge.
-
-Because expanding a set is a union over its elements:
+**`expand` reads only the atom**, not the graph built so far. Most of what
+follows comes from that:
 
 ```
 expand(A ∪ B) = expand(A) ∪ expand(B)
 ```
 
-Three things follow: merging the same file twice does nothing, the order of
-merging is irrelevant, and the grouping is irrelevant. **The graph is a function
-of the set of atoms, never of the sequence.** So "send everything again" and
-"send only what is new" produce the same result, which makes a delta scheme a
-size optimization and never a correctness one.
-
-It also means there is no big graph and no small graph on disk. There is only:
-what was merged into the graph being looked at, at this moment.
+Merging the same file twice does nothing, and order and grouping don't matter.
+The graph is a function of the *set* of atoms, so "send everything again" and
+"send what is new" give the same result.
 
 ## Where the meaning is
 
-An atom is complete in itself. `length(cat) = 3` is a whole fact and says nothing
-about any other atom.
+An atom is complete in itself. A node is the opposite: `3` is interesting because
+it is the length of `cat` *and* the last octet of an IP *and* a timesheet
+sequence number, and that fact is in no single atom. It appears when equal
+strings are grouped into one node.
 
-A node is the opposite kind of thing. `cat` is interesting because it appears in
-four atoms. `3` is interesting because it is the length of `cat` *and* the last
-octet of an IP *and* a timesheet sequence number. That fact is in no single atom.
-It cannot be written down — it is a property of the set, and it comes into
-existence only when you group.
+So meaning enters through the atoms and is made at the nodes. The atoms are
+authored; the connections mostly aren't — they happen because two strings are
+identical. The bet is less "meaning is in connections" than *meaning is in the
+connections nobody made on purpose.*
 
-> atoms hide nodes
-
-The atom list *contains* every collision and *expresses* none of them. Grouping
-turns "this string appears eight times" into "one node with eight arrows", which
-is the entire phenomenon here. And the reverse is why both halves are needed:
-every question starts at a node — click one, anchor on one, walk from one — and
-none of them exist in the file. Grouping is not an optional rendering step; it is
-what creates the places you can stand.
-
-The two halves are not mirror images, and the asymmetry is the useful part. An
-atom means something on its own, but only because its parts meant something
-before the system saw them: `length` means what it means because a person chose
-the name. A node means nothing on its own — its entire content is which atoms it
-appears in.
-
-**So meaning enters through the atoms and is made at the nodes.** The atoms could
-have come from anywhere. The nodes are the system's own contribution — the only
-facts here that nobody wrote.
-
-Nearly every system has this duality; noticing it is not a finding. What is
-unusual is that **the atoms are authored and the connections are not.** Most
-systems author both — you declare the foreign key, you draw the edge, you write
-the link. Here every atom is deliberate and not one connection is. They happen
-because two strings are identical, and can be neither caused nor prevented.
-
-So the bet is not "meaning is in connections." It is *meaning is in the
-connections I did not make.*
-
-**The test.** A framing is real if it predicts things arrived at independently.
-This one does, four times, and all four were in the code before it was written
+Some consequences, each of which showed up in the code before it was written
 down:
 
-- Connections are not authored → there can be no join keys and no matching rules.
-- Unauthored connections need no agreement → merging needs no coordination, and
-  is therefore concatenation.
-- Collision happens on exact text → how a call is written down is load-bearing,
-  and the old comma bug was structural rather than cosmetic.
-- Anything added later must arrive as atoms → "who asked" can only be recorded as
-  more calls, never as a field on the side.
+- No join keys or matching rules, because connections aren't authored.
+- Merging needs no coordination, so it is concatenation.
+- How a value is written down matters, because collision is on exact text.
+- Anything added later arrives as atoms — "who asked" would be more calls, not a
+  field on the side.
 
-## What holds
+## Design choices
 
-Ten views of one idea, not ten separate ideas.
+**What the engine holds to**
 
-**Reading backwards**
+- **Identity from contents.** A value is its text; a call is its function and
+  input. Arbitrary ids (a counter, a uuid) would make merging a matching problem.
+- **Arrows are derived.** Nobody writes an arrow; it appears because a value sat
+  in an atom.
+- **Everything is text.** A string is a number or a date through the function you
+  run on it.
+- **A node's kind comes from position.** Being a function is a property of an
+  edge, so one node can be a function in one call and a value in another.
+- **Calls don't nest.** A call inside a call is two calls side by side, so levels
+  can be added later in either direction.
+- **You can walk back.** This is the one to give up last.
 
-- **One answer per call.** A call has one arrow out and as many in as it likes.
-  Nothing enforces this — see *Known limits*.
-- **Identity comes from contents.** A value's identity is its text; a call's is
-  its argument list. Give calls arbitrary ids instead — a counter, a uuid — and
-  merging two files means matching meaningless ids across them, which is a real
-  and hard problem. Content identity is what makes merging one line long.
-- **Arrows are derived, never authored.** Nobody writes an arrow, or its slot.
-  The arrow appears because a value sat in an atom; the slot says where it sat.
-- **Nothing is ever made to match on purpose.** Two things land on one node when
-  their text is identical, never because code decided they are related. No
-  matching rules, no join keys — and two things *failing* to land on one node is
-  just as correct.
-- **How deep it goes is not decided in advance.** Every arrow goes between a
-  value and a call, so no call points straight at another. A call inside a call
-  is two calls side by side, not one nested in the other, and levels can be added
-  later in either direction without disturbing what is there.
+**Opinions about the data** — each could have gone another way:
 
-**What is refused**
-
-- **Everything is text.** One data type. A string is a number, or a list, or a
-  date, only through the function you run on it.
-- **A node's kind is worked out, not stored.** It comes from position in the
-  atom, never from a type field or from how the node is spelled. Being a
-  *function* is a property of an edge: a node is a function in a call because its
-  arrow filled that call's `fn` slot, so one node can be a function in one call
-  and a value in another, with both lives hanging off it.
-- **What things mean lives in the data, not the engine.** The header row names
-  the columns. A type is whatever a test function accepts. "Use the latest one"
-  is a rule the reader chooses.
-- **Write everything down, decide what matters later.** Every path passes through
-  calls, which say what the path *is*, so a silly path can be spotted and ignored
-  rather than being impossible to find. Nothing is thrown away for looking like
-  junk — with the one exception that a function which declines writes nothing.
-
-**Why the call is a node at all**
-
-- **You can always walk back.** Every piece of work written down can be followed
-  backwards. This is the one to give up last. Give it up and this is a different
-  project.
-
-## The opinions
-
-The findings above are the engine's half. This is your half: if the engine gives
-you no shape, you supply all of it. Each could have gone another way.
-
-- **O1 — a collection is not a thing. Membership is a call.** Asking whether
-  something is in a piece of text is one call, and that call is all there is:
-
-  ```
-  ["word","paris is a city","paris","paris"]
-  ```
-
-  A function handing back one of its own arguments, the same shape as `isIP` and
-  `hasFormat`. The selector declines a non-member, so one function also answers
-  "is this in here?" for free, and `rev_word()` goes back to the sentence and
-  forward again to its other words.
-
-  **There used to be a list.** The text was cut into a `|`-joined string, that
-  string was minted as a node, and the parts were taken back out of *it* — two
-  calls and an extra node between a sentence and its word. It was deleted, and
-  the measurement is why:
-
-  ```
-  37 minted lists in the corpus
-  36 touched by nothing but their own extractor
-   0 produced by more than one cutter
-   1 a one-element cut, whose list IS its only element
-  ```
-
-  A node nothing else lands on is not a meeting point — it is a node that exists
-  to keep track of something, which O3 says not to have. It also put two hops
-  between a sentence and its words, which the walk pays for on every route and
-  the two- and three-step menus pay for again by enumerating the junk hop.
-
-  Removing it took the corpus from 420 atoms and 709 nodes to 383 and 624, and
-  changed nothing anyone could ask.
-
-  **This does not touch the lists the world hands you.** `bob|2026-08-25|projX|8|1`
-  arrives as a value with five functions on it, and stays a node, because nobody
-  minted it. Seven of them are still in the corpus.
-- **O2 — give positions names, don't number them.** `record` names a fixed known
-  set of slots, so `lastOctet` is fine. Making up `0, 1, 2…` for a count you
-  don't know in advance is the thing to avoid.
-
-
-- **O3 — no nodes that exist only for the machinery.** A node that exists only to
-  keep track of something means something outside the data is being represented
-  inside it. This is the one that killed the list.
-- **O4 — two ways in: by name, or by content.** When a container names its parts,
-  the name becomes a function name. When nothing names them, ask about the parts
-  by content. Records go the first way, collections the second — and neither way
-  makes a node for the container.
-- **O5 — a format is its cutting functions.** Grouping one format's cutters under
-  a function named after the format is good. What is not allowed is one format's
-  function being shaped differently from another's — turning one format into
-  another to reuse a path, or checking which format you have to decide what to
-  *do* rather than which cutter to use.
-
-O1 and O2 were each made real by deleting something. There is no `chop` —
-counting the pieces of a cut is the one thing these opinions rule out, so the
-method was removed rather than left as a temptation. And there is no list.
+- **O1 — a collection is not a thing.** A sentence's words are the answers of
+  `word()`; there is no list node between them. A minted list was tried and
+  removed: of 37 in the corpus, 36 were touched by nothing but their own
+  extractor. Lists the world hands you, like `bob|2026-08-25|projX|8|1`, stay as
+  values.
+- **O2 — name positions rather than number them.** `lastOctet` is fine. Inventing
+  `0, 1, 2…` for a count you don't know in advance is what to avoid. Where order
+  is the only clue, as in an unlabelled CSV, it becomes a named function:
+  `["column1", row, "Tomas"]`.
+- **O3 — avoid nodes that exist only for the machinery.**
+- **O4 — two ways in: by name or by content.** Records name their parts, so the
+  name becomes a function. Collections don't, so you ask by content.
+- **O5 — a format is its cutting functions.** Avoid converting one format into
+  another to reuse a path.
 
 ## Quick start
 
 ```sh
 npm install
+npm run build # compile viewer.ts into dist/, which graph.html loads
 npm start     # optional viewer at :8000, watching pile.atoms
-./run.sh      # run the producer and merge its atoms into pile.atoms
-./runAll.sh   # write snapshots/combined.atoms — the regression artifact
+./run.sh      # run the producers and merge their atoms into pile.atoms
+./runAll.sh   # write snapshots/combined.atoms, the regression artifact
 ```
 
-`rfg.config.ts` lists what this pile is made of and gives each tool a short
-name. The only thing it says about a tool is whether it reads the pile, which is
-a fact about the program rather than a choice — and it is what makes a tool worth
-running again after something new lands:
+`rfg.config.ts` lists what the pile is made of and names each tool. What it says
+about a tool is whether it reads the pile, which is what makes it worth
+re-running when something new lands.
 
 ```sh
-./rfg list                                     # the inputs, the tools, which read the pile
-./rfg run                                      # bring the inputs in, catch up, stop
-./rfg run --fresh                              # the same, from an empty pile
-./rfg run ingest some/other.txt                # the inputs and this too
-./rfg run --only scan,entropy                  # catch up with some of them
-./rfg run --pile other.atoms                   # a different pile
-some-producer | ./rfg run                      # anything that prints atoms
-./rfg watch                                    # stay caught up
+./rfg list                        # the inputs, the tools, which read the pile
+./rfg run                         # bring the inputs in, catch up, stop
+./rfg run --fresh                 # the same, from an empty pile
+./rfg run ingest some/other.txt   # the inputs and this too
+./rfg run --only scan,entropy     # catch up with some of them
+./rfg run --pile other.atoms      # a different pile
+some-producer | ./rfg run         # anything that prints atoms
+./rfg watch                       # stay caught up
 ```
 
-An explicit `-s` or `-u` replaces that side of the profile rather than adding
-to it. Commands are argv arrays in `rfg.config.ts`, so tools in any language can
-be registered without shell quoting tricks.
+`rfg` checks what tools print strictly — a line that isn't three strings stops
+the run — so broken lines don't get into the pile that way.
 
-Open the page and run the producer; the viewer reloads from the changed file.
-Run `./run.sh` again and nothing changes, which is the point
-— merging is idempotent, so re-sending everything is free.
-
-Anything that can print lines is a producer, and literally so. There are four
-here, and the pile cannot tell them apart:
+## Producers
 
 ```sh
 ./producers/atom.sh notedBy paris tomas   | ./merge.sh pile.atoms
 ./producers/repo.sh                       | ./merge.sh pile.atoms
 dotnet run --project producers/timesheet  | ./merge.sh pile.atoms
-./run.sh                                  # scenarios/combined.ts, merged locally
 ```
 
-`atom.sh` takes a call as arguments and prints one line. `repo.sh` is bash,
-written by hand — no library, no kernel, nothing imported.
+`atom.sh` turns three arguments into one line. `repo.sh` is plain bash.
 
 `producers/timesheet` is C#, and makes the other half of the point: **an atom is
-a structured log line.** Nothing in that program is built around RFG. There is a
-record, a rate card, some arithmetic and an interface — the code you would write
-anyway — and the only trace of the graph is the word `Atoms` beside work that has
-already happened. Delete every one of those lines and it is still a working
-program; it just stops saying what it did. Three ways, getting progressively out
-of the way:
+a structured log line.** The program is a record, a rate card and an interface —
+code you would write anyway — with `Atoms` beside work that has already happened:
 
 ```csharp
-Atoms.Log("dayOfWeek", date, date.DayOfWeek);        // say it afterwards
+Atoms.Log("dayOfWeek", date, date.DayOfWeek);            // say it afterwards
 var rate = Atoms.Call("rate", proj, () => rates[proj]);  // wrap the call
-var cost = pricing.Cost(row);   // nothing at the call site at all
+var cost = pricing.Cost(row);   // recorded by a proxy behind IPricing
 ```
 
-The third is an interface behind a `DispatchProxy`: `Pricing` is a plain class
-with no reference to anything here, the calling code holds an `IPricing` and has
-no idea it is being recorded, and an atom is written per call. That is as far out
-of the way as it goes without a source generator.
+The part that can't be automated is turning a `decimal` or a `DateOnly` into
+text. That decision lives once, in `Atoms.cs`, and a type nobody has decided
+about is refused rather than guessed at.
 
-There is no `Def`, no vocabulary, no memo and nothing to inherit from — RFG is a
-sink, not a framework. The one thing that cannot be automated is that the graph
-has one data type, so somebody has to say how a `decimal` or a `DateOnly` becomes
-text. That decision lives in one place, `Atoms.cs`, instead of at every call
-site, and a type nobody has decided about is refused rather than guessed at.
-
-Run all four into one pile and the graph comes out like this:
-
-```
-TypeScript  420 atoms   420 new
-bash         25 atoms    11 new     14 already held
-C#           36 atoms    17 new     19 already held
-by hand       1 atom      1 new
-C# again     36 atoms     0 new
-
-709 nodes / 1440 edges  ->  764 / 1527
-```
-
-The C# producer sends 36 lines and only 23 of them are distinct, because without
-a framework it has no memo and says `dayOfWeek(2026-08-25)` once per row that
-mentions that date. Nothing anywhere minds. A producer is allowed to be exactly
-that dumb — it never has to dedupe, never has to know what it said before, and
-never has to ask.
-
-The duplicates are the interesting part. bash recomputes `length` and `upper`
-over the anagram words; C# works out `year` and `month` of the same dates. Those
-are the same calls, so they are the same atoms, so the pile already holds them
-and the graph does not move. Agreement between producers needs no protocol — it
-happens or it does not, and either way merging is a concatenation.
-
-One timesheet record ends up with seven calls hanging off it, five from the
-TypeScript producer and two from the C# one, neither knowing the other exists:
-
-```
-bob|2026-08-25|projX|8|1  -arg0->  emp   date   proj   hours   seq      (TypeScript)
-                          -arg0->  cost  shift                          (C#)
-```
-
-The C# producer also has an `isWeekend` that returns null for all three dates, so
-it contributes nothing at all — `isWeekend` is not in the graph, not as a node
-and not as an absence. A decline writes nothing down.
-
-There is one producer here and no arguments to pass: `scenarios/combined.ts`.
-`runAll.sh` needs nothing running — it writes a file, which is what makes the
-regression artifact independent of any server. The viewer pulls `vis-network`
-from a CDN, so it wants a network connection the first time. TypeScript runs
-straight through `tsx`. There is no build step.
-
-## How you call things
-
-The thing you are calling the function *on* is always the first argument. Not a
-rule the engine enforces — an atom's slot 1 is just an argument — but the
-convention that makes a walk work: `rev_fn()` goes back to the subject and to
-nothing else.
-
-**There is no producer API, and there is no chaining.** A producer is a program
-that prints atom lines. It computes things the way any program does, and says
-what it did afterwards:
-
-```
-["upper","paris","PARIS"]
-["length","PARIS","5"]
-```
-
-Those are two independent facts. Nothing in either atom records that one came
-from the other, and nothing needs to — a reader finds the join by following
-`PARIS`, which is the same node both times. **Chaining was only ever a
-convenience for whoever was writing, and it left no trace in what got written.**
-
-There used to be a class with `def`, `value` and `apply` that ran your functions
-for you, threaded the answers, and memoised. It produced exactly the atoms the
-corpus produces now, and it was deleted. `scenarios/combined.ts` is a logger
-with one primitive:
-
-```ts
-log("length", "paris", "5");
-```
-
-What that gave away for free is now written down where you can see it. A
-**function that declines writes nothing**, and that is an `if`:
+`scenarios/combined.ts` is a logger with one primitive, `log(fn, input, output)`.
+A function that declines is an `if`:
 
 ```ts
 for (const s of ["192.168.1.3", "fifskje"]) {
@@ -556,90 +275,50 @@ for (const s of ["192.168.1.3", "fifskje"]) {
 }
 ```
 
-`fifskje` leaves no trace at all, and the graph never learns the question was
-asked. Every other producer here already worked this way — `scan.ts` has a
-`continue`, the C# `Program.cs` has `if (v.Length > 0)`, the C# timesheet's
-`isWeekend` returns null for all three dates and contributes nothing.
-
-Composition across producers is not chaining either. `host` runs on what `urlIn`
-wrote, on a later round, **through the pile** — `./rfg run` re-runs every
-pile-reading tool until nothing is new. The place where work joins up is the
-file, not a call stack.
+Producers don't chain. `upper(paris) = PARIS` and `length(PARIS) = 5` are two
+independent atoms, and a reader finds the join by following `PARIS`. Composition
+across producers happens **through the pile**: `host` runs on what `urlIn`
+wrote, on a later round.
 
 ## The corpus
 
-`scenarios/combined.ts` is the whole thing: **82 functions, 420 atoms, expanding
-to 709 nodes and 1440 edges**, in 18KB of text. It was twelve separate scenario
-files until 2026-09-05; folding them into one is the point, because everything
-lands in ONE graph and values that different sources happen to agree on become
-one node.
+`scenarios/combined.ts` puts the shapes in one producer: 66 functions and 319
+atoms, expanding to 482 nodes and 817 edges. It was twelve scenarios until
+2026-09-05; folding them together is the point, because values different sources
+agree on become one node:
 
-Some of the collisions the folding produced:
+- `192.168.1.3` is a raw IP, what a hand parser digs out of `IP:192.168.1.3/24`,
+  and what the record shapes dig out of the same string. Three routes, one node.
+- `3` is `lastOctet`, `lastOctetFromIP` and `octet4`, and also `length("cat")`
+  and a timesheet `seq`, which nobody arranged.
+- `city` is a word in the prose and a column function from a CSV: a function in
+  two calls and an answer in five.
 
-- `192.168.1.3` is a raw IP in one section; it is also what another digs out of
-  `IP:192.168.1.3/24` by hand, and what the record shapes dig out of the same
-  string. Three routes, one node.
-- `3` is `lastOctet`, `lastOctetFromIP` and `octet4` — three functions, one
-  answer — and also `length("cat")` and a timesheet `seq`, which nobody arranged.
-- `paris` is a word in two texts, a CSV column value, a bare field, a grouped
-  field, a config value, a JSON key and a nested JSON key.
-- `city` is a word in the prose **and** a column function from the headered CSV.
-  One node, two lives: two `fn` arrows out to the calls where it was the
-  function, five `arg1` arrows out to the calls where it was a word.
-
-The sections still carry the old scenario names and its header says what each
-one shows. A function name is global to a producer (`def` throws on a repeat), so
-where two sections used one name for one thing it is defined once and both feed
-it — which is where most of the intersections come from. Where they used one name
-for two *different* things, one was renamed, marked `RENAMED`.
+Where two sections used one name for two different things, one was renamed and
+marked `RENAMED`.
 
 ## The viewer
 
-This is where walking backwards gets checked by eye. If a shape really can be
-read back out, you can see it here without it having been stored.
+`npm start`, then open `http://localhost:8000`. The page receives atoms and
+expands them itself. You can also paste atoms. Broken lines are counted in the
+status line rather than stopping the page.
 
-The page subscribes to the read-only file adapter and expands the atoms itself. Nothing sends it a
-graph, and no nodes-and-edges file exists anywhere.
+### graph
 
-**Expansion is incremental, and needs no reconciliation.** `expand` reads only
-the atom, so `expand(A ∪ {x}) = expand(A) ∪ expand({x})`: an arriving atom is
-expanded on its own and what comes out is added. There is nothing to diff,
-nothing to invalidate, and an atom arriving twice is free. A viewer that stored a
-derived graph would need all of that machinery exactly here.
-
-One consequence you will see: vis-network re-settles its physics on every
-arrival, so the picture moves while a producer is running.
-
-- Nodes are coloured value / function / call. Edges are drawn unlabelled —
-  direction only — and a call's slots show in the detail pane when you click it.
-- Click a node to light it and its neighbours. `multi-select` makes clicks
-  accumulate; clicking a lit node again drops it; clicking empty space clears.
-- The wheel does not zoom. Pan with the arrow keys, zoom with `[` and `]`.
+Nodes coloured value / function / call. Click to light a node and its neighbours;
+`multi-select` accumulates. Pan with the arrow keys, zoom with `[` and `]`. The
+layout re-settles as atoms arrive.
 
 ### triples
 
-What a node is, from the graph's own side: what produced it, where it was used,
-and for a call, its inputs by slot and its one answer.
+What a node is: what produced it, where it was used, and for a call, its function,
+its input and each answer.
 
 ### walk
 
-Builds a table. Pick a function; everything it ever produced becomes the rows.
-Click a cell to see where it can go, and tick a step to add a column.
-
-Two trees are in play, and this is the heart of the tab:
-
-- the **column tree** is what you ticked. Rooted at the anchor, branching,
-  function names only, no data, the same for every row. **This is a schema, and
-  it lives in the viewer, never in the graph** — which is why ticking can never
-  change a snapshot.
-- the **value tree** is what one starting value finds walking that. It branches
-  wherever a step finds more than one answer, and its leaves are the rows.
-
-A column header reads destination-first and spells out the way back —
-`date() via rev_emp()` — so two columns that branched from the same point share a
-suffix and the header says where they pair. A bare `fn()` goes to what a call
-produced; `rev_fn()` goes to what it consumed, **the subject only**. Extra
-arguments are part of a call's identity, not a place you can walk to.
+Builds a table. Pick a function; what it produced becomes the rows. Click a cell
+to see where it can go, and tick a step to add a column. `fn()` goes from input
+to answers; `rev_fn()` goes back from an answer to its inputs.
 
 ```sh
 npx tsx walk-cli.ts combined emp rev_emp date +hours
@@ -657,165 +336,174 @@ carol | "carol|2026-08-27|projY|7"   | "carol|2026-08-27|projY|7".2026-08-27   |
 carol | "carol|2026-08-27|projY|8"   | "carol|2026-08-27|projY|8".2026-08-27   | "carol|2026-08-27|projY|8".8
 ```
 
-Three `carol` rows for one person edited twice: the edit chain kept every
-version, and which one is current is a question you ask, not a cell that was
-overwritten.
+A step written with `+` hangs off the same parent as the one before, so `date`
+and `hours` both come from the record. Three `carol` rows for one person edited
+twice: the edit chain keeps each version, and which is current is a question you
+ask.
 
-Things the table does on purpose:
+What the table does on purpose:
 
-- **Values pair at their deepest shared step.** `date()` and `hours()` both hang
-  off `rev_emp()`, so they pair at the record reached through it. Computing each
-  branch independently would give a cross product — six wrong rows for bob
-  instead of three right ones — so the walk carries its intermediate values
-  rather than collapsing each branch to a set of leaves.
-- **Identical values do not collapse.** Bob has three rows, two saying
-  `2026-08-25`, because he has three records. The waypoint column beside them
-  shows why they differ, which is why it defaults to visible.
-- **A step that found nothing writes `?` and the row survives.** A row with a
-  hole is more honest than a row that vanished.
-- **Qualifiers** show the whole walk that produced a cell, and grow with depth.
-- **Values are never shortened.** No nickname, no ellipsis, no
-  hover-to-see-the-rest. The trap is not the ellipsis, it is what it grows into:
-  the moment something is abbreviated you want a stable handle for the
-  abbreviation, and that handle is an invented identifier wearing a hat. Quoting
-  is not shortening.
-- **Loops are allowed.** A word's siblings include the word itself, which is true
-  and worth seeing. The depth budget ends every walk, so no cycle detection is
-  needed.
+- **Branches pair at their deepest shared step**, so bob gets three rows, not a
+  six-row cross product.
+- **Identical values don't collapse.** Two of bob's rows say `2026-08-25` because
+  he has two records that day; the waypoint column shows which.
+- **A step that finds nothing writes `?`** and the row stays.
+- **Qualifiers** show the walk that produced a cell.
+- **Values aren't shortened.** An abbreviation tends to grow into an invented
+  identifier. Quoting isn't shortening.
 
-A saved tick-set names **columns by their header** — the chain of function names
-— and never a value, because naming a value welds a rendering choice in
-permanently. A schema of function names travels: it means the same thing on any
-graph built from the same functions. Wiping schema out of the data was never
-about disliking schemas, it was about *when* they get committed to. At write time
-a schema is a decision made before you know what you have, and changing it costs
-a migration. At view time it is a hypothesis — hold several at once, including
-contradictory ones, and throw them away for nothing.
-
-Row count is therefore a property of the schema you ticked, not of the data. A
-row is not a stable thing you can point at across two tick-sets.
+The ticked columns are a schema, and it lives in the viewer rather than the
+graph. A schema at write time is a decision made before you know what you have;
+at view time it is a hypothesis you can drop for free.
 
 ## Checking that nothing changed
 
 ```sh
-./runAll.sh          # run, write snapshots/combined.atoms
+./runAll.sh          # write snapshots/combined.atoms
 git diff snapshots/  # did anything move?
+./check.sh           # parse at intake vs. parse later: lost must be 0
 ```
 
-The snapshot is the regression artifact, and deterministic: atoms are written
-sorted, so a diff line means the atoms changed, not that a call moved. It is the
-same shape the pile holds, so `cp snapshots/combined.atoms pile.atoms` puts it
-in front of the viewer. Stdout is otherwise
-discarded. The graph does not narrate; the picture is the report.
+The snapshot is written sorted, so a diff line means the atoms changed. `check.sh`
+needs `local/sample/example2.txt`, which is data and not in the repo.
 
 ## Files
 
 ```
 rfg / rfg.ts          run tools, merge what they print, keep the pile caught up
 rfg.config.ts         a pile's inputs, its tools, and which of them read it
-scenarios/combined.ts a producer in TypeScript: every shape, in one — a logger
-producers/atom.sh     a producer: one call as arguments, one line out
-producers/repo.sh     a producer in bash, written by hand
+scenarios/combined.ts a producer in TypeScript: the shapes in one
+producers/atom.sh     a producer: three arguments in, one line out
+producers/repo.sh     a producer in bash
 producers/timesheet/  a producer in C#: ordinary code, logging to atoms
 producers/passwordrecord/      intake in C#: a file of records in, atoms out
-producers/passwordrecord-cut/  the same parse as a cutter: atoms in, atoms out
-producers/scan.ts     a cutter: reads what a Notes field was hiding
-producers/entropy.ts  a cutter: which strings look generated rather than written
-cut.sh                catch a pile up — ./rfg run --pile FILE, spelled short
+producers/passwordrecord-cut/  the same parse as a cutter
+producers/scan.ts     a cutter: addresses, URLs and hosts in a Notes field
+producers/entropy.ts  a cutter: which words look generated
+producers/shortstring.ts  a cutter: values that read like a typed word
+ingest.ts             a document in, one atom out
 merge.sh              union stdin into an atom file
-serve.ts              optional read-only file watcher and viewer server
-ingest.ts             a document in, one atom out. Intake that reads nothing
-expand.js             atoms -> nodes and edges. The one expansion
-walk.js               atoms -> tables. Browser and node, same file
-viewer.ts             the viewer's behaviour
-graph.html            the page: markup and styles
-walk-cli.js           the walk tab without the tab
+cut.sh                ./rfg run --pile FILE, spelled short
+expand.ts             atoms -> nodes and edges
+walk.ts               atoms -> tables, for the browser and the terminal
+walk-cli.ts           the walk tab without the tab
+viewer.ts, graph.html the viewer
+serve.ts              optional read-only file watcher for the viewer
 snapshots/            the regression artifact
-run.sh                produce -> merge into pile.atoms
-runAll.sh             produce -> snapshots/combined.atoms
-check.sh              the refactor's own check: nothing lost, workings in check/
+check.sh, check/      the intake check and its workings
 log.md                things tried and set down again
-REFACTOR.md          the next one: there is no graph, only an index over atoms
 ```
 
-`pile.atoms` is what the pile holds and is not tracked. `log.md` carries no
-verdict: being in it means the thing was looked at and put aside for now, and any
-entry may be picked back up.
+`pile.atoms` is not tracked.
 
 ## Known limits
 
-**Asking twice leaves no mark.** The node is already there, the arrows are
-already there, so two people asking for two different reasons are
-indistinguishable afterwards. The graph holds the set of different questions,
-with no count, no order, and no record of who asked. What that loses is the
-evidence — who asked, from where, believing what — you would need to tell apart
-two meanings of the same word.
+**Asking twice leaves no mark.** Two people asking the same question for
+different reasons look the same afterwards: no count, no order, no record of who
+asked. That is also what lets piles merge as a plain union. If who-asked is ever
+recorded, it would arrive as more atoms — the asker as a value, the asking as a
+call.
 
-That is also precisely what makes a thousand piles merge without coordination.
-Counts would have to sum, order would conflict, timestamps would need reconciling
-clocks. None of it exists, so union is the entire merge algorithm. Not a defect
-waiting to be fixed — the price already paid, and this is what it bought. Which
-constrains any fix: if who-asked is ever recorded it has to arrive as more atoms,
-the asker as a value and the asking as a call, never as a field on the side.
-Written that way two askers make two different calls and merging stays a union.
+**A hole means two things.** A `?` covers both "nobody made that call" and "the
+call came back empty", because a function that declines writes nothing.
 
-**A hole means two things.** A `?` in a table covers both "nobody made that call"
-and "the call was made and came back empty", because a function that declines
-writes nothing. Treating functions as types is what makes this matter: a type
-that only knows its positives cannot answer "no".
+**Conflicts look like answers.** Two producers giving the same call different
+answers looks the same as a call with two answers, such as a note holding two
+email addresses. A reader could check it: list the functions that should have one
+answer (`emp`, `date`, `Company`, …) and report any input where one has two.
+Before the move to three strings, the doubled form `["emailIn", note, x, x]`
+kept one answer per call so that two answers could only mean disagreement; that
+check was never run. *Open questions* has a version that names functions by
+their code.
 
-**Nothing checks for conflicts.** Two producers could write the same call with
-two different answers. We assume they never will, know that is not true in
-general, and parked it deliberately. Nothing is enforced, so the honest thing is
-also the default: the call gets two arrows out and the picture shows a fork. Name
-prefixes per producer were considered and set aside — see `log.md`.
-
-**One vocabulary per producer, and no further.** `def` throws on a repeated
-function name, but only within one producer. Across a pile there is no shared
-table, no registry, and no check available even in principle, because the pile
-has no vocabulary and never runs a function.
-
-This is demonstrated rather than argued. `scenarios/combined.ts` reads a CSV
-headed `first,last` and mints a function per column, so its `first` means "the
-first comma-separated field of a row". `producers/repo.sh` uses `first` to mean
-"the first part of a `|`-separated list". Both are sent to the same pile, and the
-graph gets one `first` node with five calls hanging off it:
-
-```
-first -fn-> first(carol,white)        the CSV column
-first -fn-> first(dave,green)
-first -fn-> first(paris|is|a|city)    the list head
-first -fn-> first(the|city|is|old)
-first -fn-> first(tokyo|is|a|city)
-```
-
-Nothing is corrupted and no answer is wrong. The word is doing two jobs, the
-picture is the only place it shows, and a reader who anchors on `first` gets
-both. That is the accepted cost of anyone bringing their own vocabulary, and it
-is what a second producer was needed to make visible.
+**Vocabulary is per producer.** `combined.ts` uses `first` for a CSV column;
+`repo.sh` uses it for the head of a `|`-separated list. In one pile they share a
+`first` node, and a reader anchored on `first` gets both. That is the cost of
+anyone bringing their own names.
 
 ## Not built yet
 
-- **A merge harness.** Streaming already expands the corpus 420 groups of one,
-  in run order rather than sorted order, and gets the same picture — grouping-
-  and order-independence at the limit. What is left to check is splitting a file
-  any number of ways, and many random orderings rather than the two that arise
-  naturally.
-- **A graph server.** `serve.ts` only exposes the inert file to browsers —
-  `expand` and `walk` are the reader's, and it never runs a function. A server
-  that gets *asked things* is a different thing, and nothing is built across that
-  line.
-- **A crawler that hunts containment** — noticing that `smith` sits inside
-  `smith@example.com`. One ordinary function whose two arguments are drawn
-  from the graph's own values, applied by something that walks on its own. One
-  cutter among many: deliberately optional, opt-in, and named in the graph where
-  it can be switched off rather than being the core activity.
-- **Weights on ticks.** Booleans today; wherever a schema is stored should not
-  assume that.
-- **Time and ordering.** The one that touches the claim itself: it is what *Known
-  limits* is missing, so whatever gets built there changes the claim and not just
-  the code.
+- **A merge harness** that splits a file many ways and merges in random orders.
+- **A query server.** `serve.ts` streams the file; a server that gets asked
+  things is a different design.
+- **A containment crawler** — noticing that `smith` sits inside
+  `smith@example.com`, written `["contains","smith@example.com","smith"]`. One
+  optional cutter among many.
+- **Weights on ticks.** Booleans today.
+- **Time and ordering**, which touches the claim itself rather than just the code.
 
-Nothing ranks anything, and nothing prefers a shorter path. Ticks replace a cost
-function. Walks are few, so all of them can be shown and length is at most a sort
-order.
+## Open questions
+
+- **Walking to a function.** A function name sits in the `fn` slot, and the walk
+  can't step to it. Lines *about* a function — `["kindOf","emp_3fa9","emp"]`,
+  who wrote it, what its reverse is called — can be written but not reached from
+  the calls it made. StringWalk could describe its own relations this way. One
+  walk step, "the function behind this cell", would close the gap. Is it worth
+  building before there is a real need?
+- **Names by content.** Name each function by a hash of its code, `emp_3fa9`.
+  The same code on the same input gives the same answer, so a function can't
+  contradict itself and a disagreement is two functions. On its own that hides
+  disagreement — `emp_3fa9` and `emp_b71c` never meet, and `walk emp` stops
+  existing — so each gets one more atom, `["kindOf","emp_3fa9","emp"]`. Walk
+  `emp_3fa9` for one implementation, or the `emp` family for all of them, where
+  two answers show which implementations disagree. This is content addressing,
+  as in Unison and Nix. It needs each name to be one piece of code with an edge
+  to hash: `scan.ts` already defines `emailIn`, `ipIn` and `urlIn` as separate
+  functions over a shared `find`. It also needs *Walking to a function*. Parked
+  until a real disagreement shows up.
+- **Disagreement now.** Should the single-answer check (*Known limits*) be built
+  as a reader in the meantime?
+- **The minted call id.** The viewer still names a call `JSON.stringify([fn,
+  input])` for vis-network, with a check against collisions. It is drawing
+  plumbing rather than part of the model. Can the drawing do without it?
+- **Function or relation?** A name here is code that returns a set of answers,
+  which makes it a relation in all but name. StringWalk's
+  `[value, relation, value]` differs from `[fn, input, output]` mostly in column
+  order. What, if anything, still separates the two projects?
+- **The noise.** The stress-test producers (`IsShortString`, `entropy`, the
+  letter functions) are most of the pile and most of its biggest hubs. They stay
+  for now; the graph view can hide the top hubs.
+
+## History
+
+**2026-08 to 09: it worked.** Three producers in three languages, with no shared
+library or schema, joined up on equal strings. No migrations, no conflict
+resolution: piles merged with `sort -u`. `check.sh` showed that parsing a
+document at intake and parsing it later off the pile give the same atoms, so not
+understanding something yet could be deferred.
+
+**What stopped it.** Atoms were `[fn, ...args, result]`. A walk step is a
+function and a direction, and with more than one argument that doesn't say where
+to land, so the walk read the first argument and the result and skipped the
+rest. Measured on the 383-line corpus: 47% of lines had two arguments and were
+half-read, and two values (`"z"`, `"0"`) could be written but never reached in
+any table. Six annoyances turned out to share that one cause:
+
+- a convention that the first argument is the subject, which nothing enforced
+- values that could be stored but not reached
+- the membership trick, `["word", sentence, "paris", "paris"]`, writing the
+  answer twice to get it into the readable slot
+- `"true"` / `"false"` verdicts becoming large hubs
+- a call id minted by JSON-encoding the argument list
+- arguments sorted as strings, so `arg10` came before `arg2`
+
+The diagnosis was that `[fn, ...args, result]` is a nested structure posing as a
+flat one. StringWalk started over from three strings, `[value, relation, value]`,
+in its own folder.
+
+**2026-10: revived.** Coming back, the smaller model was the appeal. Most of the
+pile was already three strings, and the doubled lines were three strings
+written with one repeated. The change: every atom is exactly
+`[fn, input, output]`, a call with several answers is several lines, and the
+position functions (`hasLetter`, `wordAt`, `sentenceAt`, `paragraphAt`) were
+dropped — positions weren't used by any of the real data. Five of the six
+symptoms went with it; the minted call id remains in the viewer (*Open
+questions*).
+
+It was checked by rebuilding the pile from source before and after. The old code
+reproduced the old 952-line pile exactly, except one line cut off mid-write,
+which came back whole. The new pile has 885 lines; the only difference beyond the
+planned ones was three `IsShortString` atoms for `false`, `true` and `z`, values
+that existed only inside `hasLetter`. Eighteen walks printed the same rows, and
+`check.sh` lost nothing. Readers now skip and report broken lines instead of
+stopping on the first one.

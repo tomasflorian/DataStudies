@@ -24,7 +24,7 @@
 // with "Key:". If interior punctuation was meant to be allowed and only the
 // edges refused, that is one line: strip the anchors and test the ends instead.
 //
-// WHAT IT RUNS ON: every value in the pile — every argument and every result.
+// WHAT IT RUNS ON: every value in the pile — every input and every output.
 // That is the most monotone selection there is, because nothing is ever left out
 // on the strength of something else being present. The tempting narrowing,
 // "every value except the blobs", is the trap: a value would stop being marked
@@ -35,7 +35,7 @@
 // is: the answer is a fact about the string by itself, so it comes out the same
 // on anyone's pile.
 
-import { parse, format } from "../expand.js";
+import { parse, format, brokenNote } from "../expand.js";
 import type { Atom } from "../expand.js";
 
 const MAX = 10;
@@ -49,11 +49,10 @@ const text = await new Promise<string>(resolve => {
   process.stdin.on("end", () => resolve(buf));
 });
 
-let held: Atom[];
-try { held = parse(text); }
-catch (e) { console.error("not atom lines:", (e as Error).message); process.exit(1); }
+const { atoms: held, broken } = parse(text);
+if (broken.length) console.error(brokenNote(broken, "shortstring"));
 
-// slot 0 is the function; everything after it is a value in some position
+// slot 0 is the function; the input and the output are both values
 const values = [...new Set(held.flatMap(a => a.slice(1)))];
 const out: Atom[] = values.filter(isShortString).map(v => ["IsShortString", v, v]);
 
