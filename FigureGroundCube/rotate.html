@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FigureGroundCube · Rotate</title>
+<style>
+:root {font-family:system-ui,sans-serif;color:#222;background:#fafafa;color-scheme:light}
+body{margin:0;min-height:100vh;display:grid;place-items:center}main{width:min(90vw,640px);padding:32px 0}h1{font-size:20px;font-weight:500;margin:0 0 8px}p{color:#666;font-size:14px}.stage{height: min(66vh,620px);min-height:280px;display:grid;place-items:center;background:white;border:1px solid #e5e5e5;margin:24px 0;overflow:hidden}canvas{touch-action:none;cursor:grab;max-width:100%;outline-offset:8px}canvas:active{cursor:grabbing}.controls{display:flex;flex-wrap:wrap;gap:18px;align-items:center}button{font:inherit;background:white;border:1px solid #ccc;border-radius:5px;padding:7px 12px;cursor:pointer}label{display:flex;align-items:center;gap:8px;font-size:13px}input[type=range]{width:90px;accent-color:#333}output{min-width:34px;font-variant-numeric:tabular-nums}.hint{font-size:12px}
+</style>
+<main>
+<h1>FigureGroundCube</h1>
+<p>A continuous rotation, pausing at symmetric views.</p>
+<div class="stage"><canvas tabindex="0" aria-label="Rotatable FigureGroundCube. Drag or use arrow keys to rotate; Home resets the view."></canvas></div>
+<div class="controls">
+<button id="reset">Reset view</button><button id="spin" aria-pressed="true">Pause rotation</button>
+<label>Pause <input id="pause" type="range" min="0" max="3" step="0.1" value="0.5"><output id="pauseValue">0.5 s</output></label>
+<label>Background <input id="background" type="range" min="0" max="255" value="0" aria-label="Background darkness: white to black"><output id="backgroundValue">White</output></label>
+<label><input id="realWhite" type="checkbox" checked>Draw white lines &amp; triangles</label>
+<label>Black opacity <input id="blackOpacity" type="range" min="0" max="100" value="80"><output id="blackOpacityValue">80%</output></label>
+<label>White opacity <input id="whiteOpacity" type="range" min="0" max="100" value="30"><output id="whiteOpacityValue">30%</output></label>
+<label>Size <input id="size" type="range" min="200" max="600" step="10" value="200"><output id="sizeValue">200</output></label>
+</div>
+<p class="hint">Rotates automatically · Drag to explore · All eight slot combinations stay attached to the cube.</p>
+</main>
+<script>
+'use strict';
+const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d');
+const bits=[4,2,1], radians=d=>d*Math.PI/180;
+const symmetryElevation=Math.asin(1/Math.sqrt(3)),quarterTurn=Math.PI/2;
+let pauseDuration=.5,phase=0,nextSymmetry=quarterTurn,holdRemaining=pauseDuration;
+let yaw=Math.PI/4,elevation=symmetryElevation,realWhite=true,blackOpacity=.8,whiteOpacity=.3,background=255,size=200,spinning=true,drag=null,lastTime=null;
+function pose(){yaw=Math.PI/4+phase;elevation=symmetryElevation*Math.cos(2*phase);}
+function advanceRotation(dt){
+ if(holdRemaining>0){holdRemaining=Math.max(0,holdRemaining-dt);return;}
+ const next=phase+dt*.35;
+ if(next>=nextSymmetry){phase=nextSymmetry;nextSymmetry+=quarterTurn;holdRemaining=pauseDuration;
+  if(phase>=2*Math.PI-1e-8){
+   phase=0;nextSymmetry=quarterTurn;
+   setBackground(background===0?0:255);
+   blackOpacity=background===0?.3:.8;
+   whiteOpacity=background===0?.8:.3;
+   for(const [id,value] of [['blackOpacity',blackOpacity],['whiteOpacity',whiteOpacity]]){
+    document.querySelector('#'+id).value=String(value*100);
+    document.querySelector('#'+id+'Value').value=(value*100)+'%';
+   }
+  }}
+ else phase=next;
+ pose();
+}
+const vertex=mask=>bits.map(bit=>mask&bit?-.5:.5);
+const average=(a,b)=>a.map((x,i)=>(x+b[i])/2);
+// Shared filled edges are inset by half a line width on either side.
+const patches=[],whitePatches=[];
+for(const fixed of bits){
+ const [u,v]=bits.filter(b=>b!==fixed);
+ for(const base of [0,fixed]){
+  const corners=[base,base^u,base^u^v,base^v];
+  const center=[0,1,2].map(j=>corners.reduce((sum,m)=>sum+vertex(m)[j],0)/4);
+  for(const mask of corners)for(const bit of [u,v]){
+   const a=vertex(mask);(mask&bit?whitePatches:patches).push([a,average(a,vertex(mask^bit)),center]);
+  }
+ }
+}
+const edgeKey=(a,b)=>[a.join(','),b.join(',')].sort().join('|');
+const edgeCounts=new Map();
+for(const tri of patches)tri.forEach((a,i)=>{const key=edgeKey(a,tri[(i+1)%3]);edgeCounts.set(key,(edgeCounts.get(key)||0)+1);});
+const whiteEdgeCounts=new Map();
+for(const tri of whitePatches)tri.forEach((a,i)=>{const key=edgeKey(a,tri[(i+1)%3]);whiteEdgeCounts.set(key,(whiteEdgeCounts.get(key)||0)+1);});
+function projectPatch(tri,counts=edgeCounts){
+ const original=tri.map(project);let poly=original.slice();
+ for(let i=0;i<3;i++){
+  if(counts.get(edgeKey(tri[i],tri[(i+1)%3]))<2)continue;
+  const a=original[i],b=original[(i+1)%3],c=original[(i+2)%3];
+  const dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);
+  if(length<1e-8)return [];
+  let nx=-dy/length,ny=dx/length;
+  const side=(c[0]-a[0])*nx+(c[1]-a[1])*ny;
+  if(Math.abs(side)<1e-8)return [];
+  if(side<0){nx=-nx;ny=-ny;}
+  const distance=q=>(q[0]-a[0])*nx+(q[1]-a[1])*ny-1.5;
+  const clipped=[];
+  poly.forEach((q,j)=>{
+   const r=poly[(j+1)%poly.length],dq=distance(q),dr=distance(r);
+   if(dq>=0)clipped.push(q);
+   if((dq>=0)!==(dr>=0)){const t=dq/(dq-dr);clipped.push(q.map((x,k)=>x+t*(r[k]-x)));}
+  });poly=clipped;
+ }
+ return poly;
+}
+const lines=[],whiteLines=[];
+for(let mask=0;mask<8;mask++)for(const bit of bits){
+ const a=vertex(mask);(mask&bit?lines:whiteLines).push([a,average(a,vertex(mask^bit))]);
+}
+function project([u,v,w]){
+ const sy=Math.sin(yaw),cy=Math.cos(yaw),se=Math.sin(elevation),ce=Math.cos(elevation);
+ return [100+95*(-u*cy+v*sy),100+95*(u*sy*se+v*cy*se+w*ce),-u*sy*ce-v*cy*ce+w*se];
+}
+function draw(){
+ const dpr=window.devicePixelRatio||1;
+ const pixels=Math.round(size*dpr);
+ if(canvas.width!==pixels){canvas.width=canvas.height=pixels;canvas.style.width=canvas.style.height=size+'px';}
+ ctx.setTransform(pixels/200,0,0,pixels/200,0,0);ctx.globalAlpha=1;ctx.fillStyle=`rgb(${background},${background},${background})`;ctx.fillRect(0,0,200,200);
+ const shapes=[...patches.map(points=>({points:projectPatch(points),fill:true})).filter(shape=>shape.points.length>=3),...lines.map(points=>({points:points.map(project),fill:false}))];
+ if(realWhite){
+  shapes.push(...whitePatches.map(points=>({points:projectPatch(points,whiteEdgeCounts),fill:true,color:'white'})).filter(shape=>shape.points.length>=3),
+              ...whiteLines.map(points=>({points:points.map(project),fill:false,color:'white'})));
+ }
+ // Back to front, so translucent black and white blend spatially.
+ shapes.sort((a,b)=>a.points.reduce((s,p)=>s+p[2],0)/a.points.length-b.points.reduce((s,p)=>s+p[2],0)/b.points.length);
+ ctx.fillStyle=ctx.strokeStyle='black';ctx.globalAlpha=blackOpacity;ctx.lineWidth=3;ctx.lineCap='butt';ctx.lineJoin='miter';
+ for(const shape of shapes){ctx.globalAlpha=shape.color==='white'?whiteOpacity:blackOpacity;ctx.fillStyle=ctx.strokeStyle=shape.color||'black';ctx.beginPath();shape.points.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));if(shape.fill){ctx.closePath();ctx.fill();}else ctx.stroke();}
+ ctx.globalAlpha=1;
+ // Extremal forms: all blank (WWW) and all filled (BBB).
+ ctx.globalAlpha=blackOpacity;
+ for(const [mask,color] of [[0,'#e02020'],[7,'#1565e8']]){
+  const [x,y]=project(vertex(mask));
+  ctx.globalAlpha=mask===0?whiteOpacity:blackOpacity;
+  ctx.beginPath();ctx.arc(x,y,3,0,2*Math.PI);ctx.fillStyle=color;ctx.fill();
+ }
+ ctx.globalAlpha=1;
+}
+function reset(){phase=0;nextSymmetry=quarterTurn;holdRemaining=pauseDuration;pose();spinning=true;updateSpin();draw();}
+function updateSpin(){document.querySelector('#spin').setAttribute('aria-pressed',String(spinning));document.querySelector('#spin').textContent=spinning?'Pause rotation':'Resume rotation';}
+canvas.addEventListener('pointerdown',e=>{if(e.button!==0)return;spinning=false;updateSpin();drag={id:e.pointerId,x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;yaw+=(e.clientX-drag.x)*.01;elevation+=(e.clientY-drag.y)*.01;drag.x=e.clientX;drag.y=e.clientY;draw();});
+for(const event of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(event,()=>drag=null);
+canvas.addEventListener('keydown',e=>{const moves={ArrowLeft:[-.08,0],ArrowRight:[.08,0],ArrowUp:[0,-.08],ArrowDown:[0,.08]};if(e.key==='Home'){e.preventDefault();reset();}else if(moves[e.key]){e.preventDefault();yaw+=moves[e.key][0];elevation+=moves[e.key][1];draw();}});
+document.querySelector('#reset').onclick=reset;
+document.querySelector('#spin').onclick=()=>{spinning=!spinning;if(spinning){pose();draw();}updateSpin();};
+document.querySelector('#pause').oninput=e=>{pauseDuration=Number(e.target.value);if(holdRemaining>0)holdRemaining=pauseDuration;document.querySelector('#pauseValue').value=pauseDuration.toFixed(1)+' s';};
+function setBackground(darkness){
+ background=255-darkness;
+ document.querySelector('#background').value=String(darkness);
+ document.querySelector('.stage').style.background=`rgb(${background},${background},${background})`;
+ document.querySelector('#backgroundValue').value=darkness===0?'White':darkness===255?'Black':Math.round(darkness/255*100)+'%';
+}
+document.querySelector('#background').oninput=e=>{setBackground(Number(e.target.value));draw();};
+document.querySelector('#realWhite').onchange=e=>{realWhite=e.target.checked;draw();};
+document.querySelector('#blackOpacity').oninput=e=>{blackOpacity=Number(e.target.value)/100;document.querySelector('#blackOpacityValue').value=e.target.value+'%';draw();};
+document.querySelector('#whiteOpacity').oninput=e=>{whiteOpacity=Number(e.target.value)/100;document.querySelector('#whiteOpacityValue').value=e.target.value+'%';draw();};
+document.querySelector('#size').oninput=e=>{size=Number(e.target.value);document.querySelector('#sizeValue').value=e.target.value;draw();};
+window.addEventListener('resize',draw);
+function animate(time){const dt=lastTime===null?0:Math.min((time-lastTime)/1000,.05);if(spinning&&!document.hidden&&!drag){advanceRotation(dt);draw();}lastTime=time;requestAnimationFrame(animate);}
+draw();requestAnimationFrame(animate);
+</script>
+</html>

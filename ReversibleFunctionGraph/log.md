@@ -141,3 +141,54 @@ namespaces come back they should be optional and chosen, not mandatory.
 > we assume something insane, but we know that it's insane .. no producers will
 > ever conflict .. we leave it as a todo so that this doesn't stop us from the
 > refactor
+
+---
+
+## Naming functions by a hash of their code
+
+**Tried.** A plan to name functions by a hash of their code, `host_9c1e`, with one
+more atom giving the family name used for walking and display:
+
+```
+["host_9c1e", "https://larkfield.example/login", "larkfield.example"]
+["kindOf",    "host_9c1e",                       "host"]
+```
+
+**What came out.** Set down before it was built, because writing the plan showed
+it is a convention, not a rule, and a convention needs no code.
+
+A name can get its meaning from three places, and a pile can hold all three side
+by side:
+
+1. **Code.** `host_9c1e` means what that code does. Re-running it checks the atom.
+2. **A chosen word.** `notedBy` means what its author meant. Testimony; nothing to
+   re-run.
+3. **Use.** A name learns a meaning from its track record, the answers it has
+   given. These are all in the pile already, so this kind of meaning cannot be
+   lost.
+
+A name can move between them. Code can be lost, and its name keeps the meaning its
+answers gave it. A hand-written name can later get code that reproduces it. So
+hashing is something a producer can choose per function. It is not a new rule for
+the pile, and plain names stay valid. A hash whose code cannot be found is not
+broken. It just has fewer ways to be understood.
+
+Nothing in the engine has to change for any of this: the atom, `expand.ts` and
+merging already accept a hashed name and a `kindOf` line, and any producer can
+start writing them today. That was expected to take the code to see. It came out
+of the plan instead.
+
+Notes from the plan, for a producer that adopts the convention:
+
+- **What to hash.** Not `fn.toString()`, which `tsx` rewrites. The source a
+  producer declares (a regex, or a function body) works, without covering the
+  helpers it calls. Shared-helper code such as `emp` and `date` in `combined.ts`
+  would need its parameters in the hash too.
+- **Selecting by family.** A cutter that chooses its input by function name, as
+  `scan.ts` does with `emailIn` and `urlIn`, would choose by family instead. That
+  stays monotone.
+- **Regexes can be their own names.** Short enough to sit in the fn slot, so the
+  code is in the pile with no hash at all.
+- **Disagreement.** It answers the objection in *Giving every producer its own
+  function names*: implementations stay apart, and the family brings them back
+  together, so a disagreement shows instead of disappearing.

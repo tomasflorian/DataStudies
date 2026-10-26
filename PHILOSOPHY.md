@@ -22,6 +22,39 @@ whirlpool is a shape held in moving water, and a tune stays the same tune when e
 transposed. Whitehead's philosophy of organism is the nearest company, met late, as a fellow
 traveller rather than a teacher.
 
+## The sea and the wick
+
+**The sea is continuous; every readout collapses it.** The nearest thing to the sea that can be
+built is the hidden layer of a neural network: a position in a space of thousands of dimensions,
+before anything has been named. To speak, a language model collapses its distribution over every
+possible word to one word, and the next word is built from that choice, never from the sea again.
+That is why language leads only to more language. Each readout keeps a little of the sea and
+loses the rest.
+
+**Numbers lose less, but they are words too.** A calibrated probability, or a spread over a
+scale, keeps more of the distribution than a single word does; a scale with two ends needs two
+words where five categories need five, and there are no boundaries between them to argue
+about. But a written number is a symbol, and writing it down is a collapse of its own. The
+question is never words or numbers. It is how much of the sea survives the readout, and the aim
+is better, not best.
+
+**Each organism has its own sea.** We share one world, not one sea. A fruit fly's sea is shallow
+and fits the fruit fly's world well; James Joyce's was vast. Von Uexküll called this the
+*Umwelt*: the tick's world is three signals, butyric acid, warmth and hair. Joyce spent his life
+inventing wicks that collapse less: stream of consciousness, and in *Finnegans Wake* words like
+*riverrun* and *chaosmos* that hold several meanings at once.
+
+**Communication is a readout from one sea into another.** The speaker collapses their sea into
+words; the listener rebuilds something from them in their own. The loss happens twice, and what
+is rebuilt is shaped by the listener. Two seas can never be compared directly, only their
+readouts. That is why the traces are kept and every reader brings their own sea to them: two
+piles merge their readouts, never their seas.
+
+**A sea grown from other people's readouts is not ours.** A large language model's hidden layer
+is grown from millions of people's collapsed words. It is a sea made of everyone's readouts, not
+of anyone's experience, and reading through it brings their meanings with it. A small network
+grown only on the stream at hand grows a sea of its own.
+
 ## Two axes
 
 The attempts so far move along two axes, and the search is for a point between their poles: not
@@ -71,6 +104,24 @@ storage to reading.
   a use they do fit.
 - **Attempts are sticks.** A stick is for fishing, not for mounting on the wall. When a better
   stick turns up, the old one is thrown away; what it caught is kept.
+
+## Four kinds of "is"
+
+English uses one word for four claims. All four come down to sameness, and each leaves a question
+open that only a purpose can answer:
+
+| "is" | example | reduces to | the game |
+|---|---|---|---|
+| identity | Hesperus is Phosphorus | two routes, same endpoint | same for what? |
+| predication | Venus is bright | `f(x) = value` | compared to what? |
+| membership | Venus is a planet | sameness at a coarse level of the lattice | grouped how, and who decides (Pluto) |
+| existence | there is a planet | counting groups under a chosen sameness, in some domain | counted how, and in which world? |
+
+Sameness is stored as labelled edges, not as merges, so every game stays playable at read time.
+Existence is the one that surprises: how many things there are depends on the sameness used to
+count them, and every count needs three things stated (what is counted, under which sameness, in
+which domain) before the number means anything. The word `Hesperus` occurs a thousand times in
+Greek writing; a planet separate from Phosphorus occurs zero times. Both counts are true.
 
 ## SpeedOfTime: records found by surprise
 
@@ -127,7 +178,9 @@ of everything.
   neural predictor trained only on the stream itself would generalise without importing anyone
   else's expectations (see TODO.md).
 - **Is there such a thing as a point?** If records dissolve into gradients, values and characters
-  may too. What the stream is made of, before anything is recognised, is unanswered.
+  may too. One answer is the sea: before anything is recognised there are no points, only
+  positions in a continuous space, and recognising something is the collapse to a point. Whether
+  the stream itself is made that way, or only our reading of it, is unanswered.
 - **Names.** Found boundaries come without names. Whether a person names them afterwards, and how
   a name relates to the region it names, is not decided.
 - **Sameness across streams.** Finding records inside one stream is the first half. Deciding that

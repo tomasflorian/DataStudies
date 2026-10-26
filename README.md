@@ -20,6 +20,7 @@ Oldest first. Each folder is a self-contained project with its own README, SPEC 
 | [EdgeOnEdge](EdgeOnEdge/) | 2026-09 | dormant | Files come in as they are; the structure is read off afterwards, with tags on the connections. |
 | [Entwine](Entwine/) | 2026-10 | draft | Store what cutters find as small trees; work out what they share at read time. |
 | [SpeedOfTime](SpeedOfTime/) | 2026-10 | draft | Find records and boundaries in a raw stream from changes in surprise. |
+| [FigureGroundCube](FigureGroundCube/) | 2026-10 | spec only | Store facts; every way of blanking one out is a node, and facts meet on the ground they share. |
 
 ## Adding a project
 

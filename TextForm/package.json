@@ -1,0 +1,24 @@
+{
+  "name": "textform",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "esbuild src/main.js --bundle --outfile=dist/app.js",
+    "watch": "esbuild src/main.js --bundle --outfile=dist/app.js --watch",
+    "build:hl": "esbuild src/highlight.js --bundle --outfile=dist/highlight.js",
+    "watch:hl": "esbuild src/highlight.js --bundle --outfile=dist/highlight.js --watch"
+  },
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "prosemirror-commands": "^1.7.2",
+    "prosemirror-history": "^1.5.1",
+    "prosemirror-keymap": "^1.2.3",
+    "prosemirror-model": "^1.25.12",
+    "prosemirror-schema-basic": "^1.2.5",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.42.8"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

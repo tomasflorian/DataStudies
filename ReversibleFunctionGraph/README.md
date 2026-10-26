@@ -440,26 +440,26 @@ anyone bringing their own names.
   the calls it made. StringWalk could describe its own relations this way. One
   walk step, "the function behind this cell", would close the gap. Is it worth
   building before there is a real need?
-- **Names by content.** Name each function by a hash of its code, `emp_3fa9`.
-  The same code on the same input gives the same answer, so a function can't
-  contradict itself and a disagreement is two functions. On its own that hides
-  disagreement — `emp_3fa9` and `emp_b71c` never meet, and `walk emp` stops
-  existing — so each gets one more atom, `["kindOf","emp_3fa9","emp"]`. Walk
-  `emp_3fa9` for one implementation, or the `emp` family for all of them, where
-  two answers show which implementations disagree. This is content addressing,
-  as in Unison and Nix. It needs each name to be one piece of code with an edge
-  to hash: `scan.ts` already defines `emailIn`, `ipIn` and `urlIn` as separate
-  functions over a shared `find`. It also needs *Walking to a function*. Parked
-  until a real disagreement shows up.
+- **Names by content.** Name each function by a hash of its code, `emp_3fa9`,
+  with `["kindOf","emp_3fa9","emp"]` for the family. This turned out to be a
+  convention rather than a feature: nothing in the engine has to change, and any
+  producer can adopt it. See `log.md`.
 - **Disagreement now.** Should the single-answer check (*Known limits*) be built
   as a reader in the meantime?
 - **The minted call id.** The viewer still names a call `JSON.stringify([fn,
   input])` for vis-network, with a check against collisions. It is drawing
   plumbing rather than part of the model. Can the drawing do without it?
 - **Function or relation?** A name here is code that returns a set of answers,
-  which makes it a relation in all but name. StringWalk's
-  `[value, relation, value]` differs from `[fn, input, output]` mostly in column
-  order. What, if anything, still separates the two projects?
+  which makes it a relation in all but name, and StringWalk's `[value, relation,
+  value]` has the same shape. The difference is not in the structure. A
+  StringWalk label *is* its meaning: someone chose the word, and nothing stands
+  behind it. An RFG name can *point to* its meaning: it names whatever produced
+  the answer, however much more that code does than a short label could say.
+  Meaning can come from three places — code, a chosen word, or use, the track
+  record a name builds up in the pile — and one name can move between them: code
+  can be lost while the answers keep what they taught. That is a property of
+  each name rather than of either project, so one pile could hold all three. The
+  two stay in separate folders for now.
 - **The noise.** The stress-test producers (`IsShortString`, `entropy`, the
   letter functions) are most of the pile and most of its biggest hubs. They stay
   for now; the graph view can hide the top hubs.
