@@ -1,0 +1,96 @@
+10.20.2.1 dev eth1 lladdr aa:c1:ab:df:fb:b3 STALE 
+10.20.2.20 dev eth1 lladdr aa:c1:ab:9f:0f:b6 STALE 
+10.20.2.30 dev eth1 lladdr aa:c1:ab:ab:f9:bf STALE 
+172.30.31.1 dev eth0 lladdr 02:42:01:de:df:4c STALE 
+10.20.2.10 dev eth1 lladdr aa:c1:ab:4a:48:ad STALE 
+
+10.20.0.1   r1
+10.20.0.2   r2
+10.20.1.10  lb01 www
+10.20.1.11  web01
+10.20.1.12  web02
+10.20.1.21  db01
+10.20.1.22  db02
+10.20.1.31  cache01
+10.20.1.41  mail01 mail
+10.20.2.10  dns01 ns1
+10.20.2.20  files01
+10.20.2.30  print01
+10.20.2.50  scan
+10.20.3.10  nas01
+10.20.3.20  media01
+10.20.3.30  hub01
+10.20.3.40  cam01
+
+nmap -sS 10.20.2.0/24                                     
+Starting Nmap 7.99 ( https://nmap.org ) at 2026-10-27 19:19 +0000
+Nmap scan report for 10.20.2.1
+Host is up (0.000032s latency).
+All 1000 scanned ports on 10.20.2.1 are in ignored states.
+Not shown: 1000 closed tcp ports (reset)
+MAC Address: AA:C1:AB:DF:FB:B3 (Unknown)
+
+Nmap scan report for 10.20.2.10
+Host is up (0.000032s latency).
+Not shown: 999 closed tcp ports (reset)
+PORT   STATE SERVICE
+53/tcp open  domain
+MAC Address: AA:C1:AB:4A:48:AD (Unknown)
+
+Nmap scan report for 10.20.2.20
+Host is up (0.000034s latency).
+Not shown: 997 closed tcp ports (reset)
+PORT    STATE SERVICE
+22/tcp  open  ssh
+139/tcp open  netbios-ssn
+445/tcp open  microsoft-ds
+MAC Address: AA:C1:AB:9F:0F:B6 (Unknown)
+
+Nmap scan report for 10.20.2.30
+Host is up (0.000032s latency).
+All 1000 scanned ports on 10.20.2.30 are in ignored states.
+Not shown: 1000 closed tcp ports (reset)
+MAC Address: AA:C1:AB:AB:F9:BF (Unknown)
+
+Nmap scan report for 10.20.2.50
+Host is up.
+All 1000 scanned ports on 10.20.2.50 are in ignored states.
+Not shown: 1000 filtered tcp ports (no-response)
+
+Nmap done: 256 IP addresses (5 hosts up) scanned in 204.53 seconds
+
+
+
+frr defaults traditional
+hostname r1
+interface eth1
+ description server-room
+ ip address 10.20.1.1/24
+interface eth2
+ description office
+ ip address 10.20.2.1/24
+interface eth3
+ description to-r2
+ ip address 10.20.0.1/30
+router ospf
+ ospf router-id 10.20.0.1
+ network 10.20.0.0/16 area 0
+line vty
+
+
+
+frr defaults traditional
+hostname r2
+interface eth1
+ description to-r1
+ ip address 10.20.0.2/30
+interface eth2
+ description home
+ ip address 10.20.3.1/24
+router ospf
+ ospf router-id 10.20.0.2
+ network 10.20.0.0/16 area 0
+line vty
+
+
+

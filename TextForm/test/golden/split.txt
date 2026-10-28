@@ -1,0 +1,20 @@
+split: the text cut into blocks at blank lines
+dictionary: Block:cut "\n\n"
+each input (as JSON), then the blocks it gives as [block], newlines in them as ⏎
+
+"a\nb\n\nc"
+  [a⏎b]
+  [c]
+"\n\na\n\n\n\nb\n\n"
+  [a]
+  [b]
+"a\n\n\nb"
+  [a]
+  [⏎b]
+"a\n\n  \n\nb"
+  [a]
+  [b]
+"no separator"
+  [no separator]
+"\n\n"
+  (none)

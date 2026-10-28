@@ -1,0 +1,15 @@
+columns: what the table's columns become as types under Found are clicked
+each run: the columns as typed (as JSON), then a line a click: the type clicked, and the columns after it
+
+""
+  Host  -> Host
+  IP    -> Host, IP
+  User  -> Host, IP, User
+  IP    -> Host, User
+  Host  -> User
+
+"Host,IP ,  ,User"
+  Pass  -> Host, IP, User, Pass
+
+"Host, IP"
+  Host  -> IP

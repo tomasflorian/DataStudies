@@ -1,0 +1,137 @@
+language: what each rule finds
+each part: its dictionary, its input (as JSON), then each type with its values in text order ([value], newlines as ⏎)
+
+== blanks
+dictionary:
+  Num:[0-255]
+  Letter:Group [A-H]
+  Digits:x[digits]
+  Hex:[hex]:[hex]
+  Word:<[word]>
+  Gap:a[spaces]b
+  Line:[line]
+  Rest:key=[rest]
+  Any:<[*]>
+  Para:P[*][break]
+input: "256 255 007 Group C Group Z x42 0a:FF <web-01_x> a  \t b\nkey=some value\n<one><two>\n\nP1 end\n\nP2 last"
+  Num: [255]
+  Letter: [Group C]
+  Digits: [x42]
+  Hex: [0a:FF]
+  Word: [<web-01_x>] [<one>] [<two>]
+  Gap: [a  	 b]
+  Line: [256 255 007 Group C Group Z x42 0a:FF <web-01_x> a  	 b] [key=some value] [<one><two>] [P1 end] [P2 last]
+  Rest: [key=some value]
+  Any: [<web-01_x>] [<one>] [<two>]
+  Para: [P1 end⏎⏎] [P2 last]
+
+== escapes
+dictionary:
+  Lit:\[digits] \(x)
+  Two:a\nb
+  Paren:(Unknown)
+input: "[digits] (x) and a\nb, MAC (Unknown)"
+  Lit: [[digits] (x)]
+  Two: [a⏎b]
+  Paren: [(Unknown)]
+
+== quoted
+dictionary:
+  Note:"cut on Tuesday"
+  Lines:"[digits] apples"
+input: "cut on Tuesday: 12 apples"
+  Note: [cut on Tuesday]
+  Lines: [12 apples]
+
+== named part
+dictionary:
+  IP:10.20.[0-255].[0-255]
+  Host:{IP}[spaces]([word])
+  Alias:{Host} ([word])
+input: "10.20.0.1   r1\n10.20.1.10  lb01 www\n10.20.2.1 dev eth1"
+  IP: [10.20.0.1] [10.20.1.10] [10.20.2.1]
+  Host: [r1] [lb01] [dev]
+  Alias: [www] [eth1]
+
+== containing / in
+dictionary:
+  IP:192.168.1.[0-255]
+  Host:web[digits]
+  Record:Record:\n[*][break]
+  Full:{Record} containing {IP} {Host}
+  AtMostOne:{Record} containing {IP}?
+  NoHost:{Record} containing {IP}+ and {Host}?
+  Line:[line]
+  HostLine:{Line} containing {Host}
+  IPInFull:{IP} in {Full}
+input: "Record:\nweb01 at 192.168.1.2\n\nRecord:\n192.168.1.3 and 192.168.1.4\n\nRecord:\nweb02"
+  IP: [192.168.1.2] [192.168.1.3] [192.168.1.4]
+  Host: [web01] [web02]
+  Record: [Record:⏎web01 at 192.168.1.2⏎⏎] [Record:⏎192.168.1.3 and 192.168.1.4⏎⏎] [Record:⏎web02]
+  Full: [Record:⏎web01 at 192.168.1.2⏎⏎]
+  AtMostOne: [Record:⏎web01 at 192.168.1.2⏎⏎] [Record:⏎web02]
+  NoHost: [Record:⏎web01 at 192.168.1.2⏎⏎] [Record:⏎192.168.1.3 and 192.168.1.4⏎⏎]
+  Line: [Record:] [web01 at 192.168.1.2] [Record:] [192.168.1.3 and 192.168.1.4] [Record:] [web02]
+  HostLine: [web01 at 192.168.1.2] [web02]
+  IPInFull: [192.168.1.2]
+
+== cut inside a type
+dictionary:
+  Line:[line]
+  Word:cut {Line} on " "
+  Para:cut "\n\n"
+  Field:cut {Para} on ","
+input: "a b\nc d\n\ne,f\ng"
+  Line: [a b] [c d] [e,f] [g]
+  Word: [a] [b] [c] [d] [e,f] [g]
+  Para: [a b⏎c d] [e,f⏎g]
+  Field: [a b⏎c d] [e] [f⏎g]
+
+== order
+dictionary:
+  Pair:{A} in {Line}
+  A:[digits]
+  Line:[line]
+  X:{Y} in {Line}
+  Y:{X} in {Line}
+input: "1 2\n3"
+  Pair: [1] [2] [3]
+  A: [1] [2] [3]
+  Line: [1 2] [3]
+  X: (none)
+  Y: (none)
+
+== regex
+dictionary:
+  Date:/\b[1-9][0-9]* May/
+  Broken:/(/
+input: "on 3 May and 31 May, not 0 May"
+  Date: [3 May] [31 May]
+  Broken: (none)
+
+== counts
+dictionary:
+  Exactly:[digits:4]
+  AtMost:x[digits:..2]
+  AtLeast:y[digits:3..]
+  Between:z[digits:2..3]
+  Short:<[*:..5]>
+  ShortLine:[line:..9]
+  Code:[word:2]-[hex:4]
+  SINFormat:[digits:3] [digits:3] [digits:3]
+  SINFormat:[digits:3]-[digits:3]-[digits:3]
+  SIN:SIN[*:..300]({SINFormat})
+  Far:SIN[*:..10]({SINFormat})
+  Plain:[digits:] [digits:9..3] [break:2] [digits:x]
+input: "1234 12345 x1 x12 x123 y12 y123 y12345 z1 z12 z123 z1234 <abc> <abcdefg> ab-0f3A\nshort line\nSIN\n\n   (on file, see below)\n   046 454 286\nPhone 613 555 0199\nSIN: 130-692-544, not 12-345-678\n[digits:] [digits:9..3] [break:2] [digits:x]"
+  Exactly: [1234] [0199]
+  AtMost: [x1] [x12]
+  AtLeast: [y123] [y12345]
+  Between: [z12] [z123]
+  Short: [<abc>]
+  ShortLine: [SIN]
+  Code: [ab-0f3A]
+  SINFormat: [046 454 286] [130-692-544]
+  SIN: [046 454 286] [130-692-544]
+  Far: [130-692-544]
+  Plain: [[digits:] [digits:9..3] [break:2] [digits:x]]

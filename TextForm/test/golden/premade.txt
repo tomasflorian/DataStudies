@@ -1,0 +1,131 @@
+premade: each premade dictionary loaded alone on the file it was made for ("any": lab.net.txt)
+each type found: how many values, and the first four ([value], newlines as ⏎, long ones cut short with …)
+
+== network addresses on data/lab.net.txt
+dictionary:
+  IP:[0-255].[0-255].[0-255].[0-255]
+  Prefix:{IP}/[0-32]
+  MAC:[hex]:[hex]:[hex]:[hex]:[hex]:[hex]
+  Interface:eth[digits]
+  Interface 4: [eth1] [eth0] [eth2] [eth3]
+  IP 23: [10.20.2.1] [10.20.2.20] [10.20.2.30] [172.30.31.1] …
+  MAC 9: [aa:c1:ab:df:fb:b3] [aa:c1:ab:9f:0f:b6] [aa:c1:ab:ab:f9:bf] [02:42:01:de:df:4c] …
+  Prefix 7: [10.20.2.0/24] [10.20.1.1/24] [10.20.2.1/24] [10.20.0.1/30] …
+
+== ip neigh on data/lab.net.txt
+dictionary:
+  IP:[0-255].[0-255].[0-255].[0-255]
+  MAC:[hex]:[hex]:[hex]:[hex]:[hex]:[hex]
+  Interface:eth[digits]
+  Neighbour:{IP} dev {Interface} lladdr {MAC}
+  State:{Neighbour} ([word])
+  Interface 4: [eth1] [eth0] [eth2] [eth3]
+  IP 23: [10.20.2.1] [10.20.2.20] [10.20.2.30] [172.30.31.1] …
+  MAC 9: [aa:c1:ab:df:fb:b3] [aa:c1:ab:9f:0f:b6] [aa:c1:ab:ab:f9:bf] [02:42:01:de:df:4c] …
+  Neighbour 5: [10.20.2.1 dev eth1 lladdr aa:…] [10.20.2.20 dev eth1 lladdr aa…] [10.20.2.30 dev eth1 lladdr aa…] [172.30.31.1 dev eth0 lladdr 0…] …
+  State 1: [STALE]
+
+== hosts file on data/lab.net.txt
+dictionary:
+  IP:[0-255].[0-255].[0-255].[0-255]
+  HostName:{IP} [spaces]([word])
+  Alias:{HostName} ([word])
+  Alias 3: [www] [mail] [ns1]
+  HostName 17: [r1] [r2] [lb01] [web01] …
+  IP 23: [10.20.2.1] [10.20.2.20] [10.20.2.30] [172.30.31.1] …
+
+== nmap on data/lab.net.txt
+dictionary:
+  IP:[0-255].[0-255].[0-255].[0-255]
+  MAC:[hex]:[hex]:[hex]:[hex]:[hex]:[hex]
+  Report:Nmap scan report for [*][break]
+  Scanned:Nmap scan report for ({IP})
+  Port:([digits])/tcp[spaces]open
+  Service:/tcp[spaces]open[spaces]([word])
+  ReportMAC:{MAC} in {Report}
+  IP 23: [10.20.2.1] [10.20.2.20] [10.20.2.30] [172.30.31.1] …
+  MAC 9: [aa:c1:ab:df:fb:b3] [aa:c1:ab:9f:0f:b6] [aa:c1:ab:ab:f9:bf] [02:42:01:de:df:4c] …
+  Port 4: [53] [22] [139] [445]
+  Report 5: [Nmap scan report for 10.20.2.…] [Nmap scan report for 10.20.2.…] [Nmap scan report for 10.20.2.…] [Nmap scan report for 10.20.2.…] …
+  ReportMAC 4: [AA:C1:AB:DF:FB:B3] [AA:C1:AB:4A:48:AD] [AA:C1:AB:9F:0F:B6] [AA:C1:AB:AB:F9:BF]
+  Scanned 5: [10.20.2.1] [10.20.2.10] [10.20.2.20] [10.20.2.30] …
+  Service 4: [domain] [ssh] [netbios-ssn] [microsoft-ds]
+
+== frr config on data/lab.net.txt
+dictionary:
+  IP:[0-255].[0-255].[0-255].[0-255]
+  Prefix:{IP}/[0-32]
+  Interface:eth[digits]
+  Router:hostname ([word])
+  Stanza:/^interface .*(?:\n .*)*/
+  Address:ip address ({Prefix})
+  StanzaInterface:{Interface} in {Stanza}
+  Address 5: [10.20.1.1/24] [10.20.2.1/24] [10.20.0.1/30] [10.20.0.2/30] …
+  Interface 4: [eth1] [eth0] [eth2] [eth3]
+  IP 23: [10.20.2.1] [10.20.2.20] [10.20.2.30] [172.30.31.1] …
+  Prefix 7: [10.20.2.0/24] [10.20.1.1/24] [10.20.2.1/24] [10.20.0.1/30] …
+  Router 2: [r1] [r2]
+  Stanza 5: [interface eth1⏎ description s…] [interface eth2⏎ description o…] [interface eth3⏎ description t…] [interface eth1⏎ description t…] …
+  StanzaInterface 3: [eth1] [eth2] [eth3]
+
+== internet addresses on data/internet.txt
+dictionary:
+  Email:/(?<![\p{L}\p{N}._%+-])[\p{L}\p{N}._%+-]+@[\p{L}\p{N}-]+(?:\.[\p{L}\p{N}-]+)+/
+  URL:/\bhttps?:\/\/[^\s<>"')\]]*[^\s<>"')\].,;:!?]/
+  IP:[0-255].[0-255].[0-255].[0-255]
+  PrivateIP:10.[0-255].[0-255].[0-255]
+  PrivateIP:172.[16-31].[0-255].[0-255]
+  PrivateIP:192.168.[0-255].[0-255]
+  RoutableIP:[1-9].[0-255].[0-255].[0-255]
+  RoutableIP:[11-99].[0-255].[0-255].[0-255]
+  RoutableIP:100.[0-63].[0-255].[0-255]
+  RoutableIP:100.[128-255].[0-255].[0-255]
+  RoutableIP:[101-126].[0-255].[0-255].[0-255]
+  RoutableIP:[128-168].[0-255].[0-255].[0-255]
+  RoutableIP:169.[0-253].[0-255].[0-255]
+  RoutableIP:169.255.[0-255].[0-255]
+  RoutableIP:[170-171].[0-255].[0-255].[0-255]
+  RoutableIP:172.[0-15].[0-255].[0-255]
+  RoutableIP:172.[32-255].[0-255].[0-255]
+  RoutableIP:[173-191].[0-255].[0-255].[0-255]
+  RoutableIP:192.[0-167].[0-255].[0-255]
+  RoutableIP:192.[169-255].[0-255].[0-255]
+  RoutableIP:[193-223].[0-255].[0-255].[0-255]
+  Email 4: [alice@example.com] [ops-team@corp.example.org] [bob.smith+alerts@mail.example…] [noc@example.net]
+  IP 13: [10.20.1.10] [10.20.1.11] [192.168.4.0] [203.0.113.7] …
+  PrivateIP 5: [10.20.1.10] [10.20.1.11] [172.16.5.20] [172.31.255.254] …
+  RoutableIP 5: [8.8.8.8] [1.1.1.1] [9.9.9.9] [172.32.0.1] …
+  URL 3: [https://status.example.com/in…] [http://wiki.corp.example.org/…] [https://support.example.net/t…]
+
+== Canadian SIN on data/sin.txt
+dictionary:
+  SINFormat:[digits:3] [digits:3] [digits:3]
+  SINFormat:[digits:3]-[digits:3]-[digits:3]
+  SINFormat:[digits:9]
+  SINLabel:SIN
+  SINLabel:S.I.N.
+  SINLabel:Social Insurance Number
+  SINLabel:Social insurance number
+  SINLabel:Social insurance no.
+  SIN:{SINLabel}[*:..300]({SINFormat})
+  SIN 4: [046 454 286] [130-692-544] [287654321] [123 456 789]
+  SINFormat 4: [046 454 286] [123 456 789] [130-692-544] [287654321]
+  SINLabel 4: [SIN] [S.I.N.] [Social Insurance Number] [Social insurance no.]
+
+== layout on data/lab.net.txt
+dictionary:
+  Line:[line]
+  Block:cut "\n\n"
+  Word:cut {Line} on " "
+  Block 10: [10.20.2.1 dev eth1 lladdr aa:…] [10.20.0.1   r1⏎10.20.0.2   r2…] [nmap -sS 10.20.2.0/24        …] [Nmap scan report for 10.20.2.…] …
+  Line 71: [10.20.2.1 dev eth1 lladdr aa:…] [10.20.2.20 dev eth1 lladdr aa…] [10.20.2.30 dev eth1 lladdr aa…] [172.30.31.1 dev eth0 lladdr 0…] …
+  Word 146: [10.20.2.1] [dev] [eth1] [lladdr] …
+
+== apple flowering groups on data/apple.wiki.txt
+dictionary:
+  Group:Group [A-H]
+  Date:[1-31] May
+  GroupLine:Group [A-H] [rest]
+  Date 7: [3 May] [7 May] [11 May] [15 May] …
+  Group 7: [Group A] [Group B] [Group C] [Group D] …
+  GroupLine 7: [Group A – Early flowering, 1 …] [Group B – 4 to 7 May ('Idared…] [Group C – Mid-season flowerin…] [Group D – Mid/late season flo…] …

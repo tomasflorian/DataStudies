@@ -2,10 +2,10 @@
   "name": "textform",
   "version": "1.0.0",
   "scripts": {
-    "build": "esbuild src/main.js --bundle --outfile=dist/app.js",
-    "watch": "esbuild src/main.js --bundle --outfile=dist/app.js --watch",
-    "build:hl": "esbuild src/highlight.js --bundle --outfile=dist/highlight.js",
-    "watch:hl": "esbuild src/highlight.js --bundle --outfile=dist/highlight.js --watch"
+    "build": "node samples.mjs && esbuild src/cutter.js --bundle --outfile=dist/cutter.js",
+    "watch": "node samples.mjs --watch & esbuild src/cutter.js --bundle --outfile=dist/cutter.js --watch",
+    "test": "node --test \"test/*.test.js\"",
+    "test:watch": "node test/watch.mjs"
   },
   "type": "module",
   "private": true,

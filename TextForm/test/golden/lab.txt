@@ -1,0 +1,56 @@
+lab: data/lab.net.txt through one dictionary, as a table
+dictionary:
+  IP:10.20.[0-255].[0-255]
+  Line:[line]
+  Block:cut "\n\n"
+  Interface:eth[0-9]
+  MAC:[hex]:[hex]:[hex]:[hex]:[hex]:[hex]
+table: IP, MAC, Interface
+
+found:
+Block  10 values, 10 places
+Interface  4 values, 10 places
+IP  22 values, 39 places
+Line  71 values, 80 places
+MAC  9 values, 9 places
+
+IP           | MAC                 | Interface
+[10.20.2.1]  | [aa:c1:ab:df:fb:b3] | [eth1]
+[10.20.2.20] | [aa:c1:ab:9f:0f:b6] | [eth1]
+[10.20.2.30] | [aa:c1:ab:ab:f9:bf] | [eth1]
+[10.20.2.10] | [aa:c1:ab:4a:48:ad] | [eth1]
+[10.20.0.1]  | ?                   | ?
+[10.20.0.2]  | ?                   | ?
+[10.20.1.10] | ?                   | ?
+[10.20.1.11] | ?                   | ?
+[10.20.1.12] | ?                   | ?
+[10.20.1.21] | ?                   | ?
+[10.20.1.22] | ?                   | ?
+[10.20.1.31] | ?                   | ?
+[10.20.1.41] | ?                   | ?
+[10.20.2.10] | ?                   | ?
+[10.20.2.20] | ?                   | ?
+[10.20.2.30] | ?                   | ?
+[10.20.2.50] | ?                   | ?
+[10.20.3.10] | ?                   | ?
+[10.20.3.20] | ?                   | ?
+[10.20.3.30] | ?                   | ?
+[10.20.3.40] | ?                   | ?
+[10.20.2.0]  | [AA:C1:AB:DF:FB:B3] | ?
+[10.20.2.1]  | [AA:C1:AB:DF:FB:B3] | ?
+[10.20.2.1]  | [AA:C1:AB:DF:FB:B3] | ?
+[10.20.2.10] | [AA:C1:AB:4A:48:AD] | ?
+[10.20.2.20] | [AA:C1:AB:9F:0F:B6] | ?
+[10.20.2.30] | [AA:C1:AB:AB:F9:BF] | ?
+[10.20.2.30] | [AA:C1:AB:AB:F9:BF] | ?
+[10.20.2.50] | ?                   | ?
+[10.20.2.50] | ?                   | ?
+[10.20.1.1]  | ?                   | [eth1] [eth2] [eth3]
+[10.20.2.1]  | ?                   | [eth1] [eth2] [eth3]
+[10.20.0.1]  | ?                   | [eth1] [eth2] [eth3]
+[10.20.0.1]  | ?                   | [eth1] [eth2] [eth3]
+[10.20.0.0]  | ?                   | [eth1] [eth2] [eth3]
+[10.20.0.2]  | ?                   | [eth1] [eth2]
+[10.20.3.1]  | ?                   | [eth1] [eth2]
+[10.20.0.2]  | ?                   | [eth1] [eth2]
+[10.20.0.0]  | ?                   | [eth1] [eth2]

@@ -1,0 +1,82 @@
+cut on several separators: a piece ends at whichever comes first; where two start at the same place, the longer is the cut
+each part: its dictionary, then each input (as JSON) and the blocks it gives as [block], newlines in them as ⏎
+
+== words
+dictionary: Word:cut " " "\n"
+"10.20.1.10  lb01 www\n10.20.1.41  mail01 mail"
+  [10.20.1.10]
+  [lb01]
+  [www]
+  [10.20.1.41]
+  [mail01]
+  [mail]
+"one\ntwo three\n\nfour"
+  [one]
+  [two]
+  [three]
+  [four]
+
+== words, " " alone (for comparison)
+dictionary: Word:cut " "
+"10.20.1.10  lb01 www\n10.20.1.41  mail01 mail"
+  [10.20.1.10]
+  [lb01]
+  [www⏎10.20.1.41]
+  [mail01]
+  [mail]
+
+== longer wins
+dictionary: Part:cut "=" "=>"
+"a=>b"
+  [a]
+  [b]
+"a=b"
+  [a]
+  [b]
+"a=>b=c"
+  [a]
+  [b]
+  [c]
+
+== order
+dictionary: Part:cut "=>" "="
+"a=>b"
+  [a]
+  [b]
+"a=b"
+  [a]
+  [b]
+"a=>b=c"
+  [a]
+  [b]
+  [c]
+
+== first comes first
+dictionary: Field:cut "," ";"
+"a,b;c"
+  [a]
+  [b]
+  [c]
+"a;b,c"
+  [a]
+  [b]
+  [c]
+",;a;,"
+  [a]
+
+== commas
+dictionary: Word:cut " ", "\n"
+"a b\nc"
+  [a]
+  [b]
+  [c]
+
+== broken: empty separator
+dictionary: Word:cut "" " "
+"a b"
+  (none)
+
+== broken: not in quotes
+dictionary: Word:cut " " \n
+"a b"
+  (none)

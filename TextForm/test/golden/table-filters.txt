@@ -1,0 +1,61 @@
+table: quick filters, a filter a column ("" none), on data/internet.txt as Line, URL+IP
+13 rows unfiltered; each run: its filters, then the rows left
+
+== Line: ""  URL+IP: "172."  -> 1 rows
+Line                                                                             | URL+IP
+[172.16.5.20, but nothing past 172.31.255.254 answered. 172.32.0.1 is not ours.] | [172.16.5.20] [172.31.255.254] [172.32.0.1]
+
+== Line: ""  URL+IP: "HTTPS"  -> 2 rows
+Line                                                                                | URL+IP
+[Status page: https://status.example.com/incidents/2026-10-27?view=full.]           | [https://status.example.com/incidents/2026-10-27?view=full]
+[Vendor ticket: https://support.example.net/t/48151 - escalate to noc@example.net.] | [https://support.example.net/t/48151]
+
+== Line: ""  URL+IP: "?"  -> 4 rows
+Line                                                               | URL+IP
+[From: Alice Example <alice@example.com>]                          | ?
+[To: ops-team@corp.example.org, bob.smith+alerts@mail.example.net] | ?
+[Subject: outage report]                                           | ?
+[Hi all,]                                                          | ?
+
+== Line: "NAT"  URL+IP: ""  -> 2 rows
+Line                                                                              | URL+IP
+[from the office (192.168.4.0/24, NAT to 203.0.113.7) still reached the proxy at] | [192.168.4.0] [203.0.113.7]
+[100.72.14.3 (carrier NAT), and one laptop came up with 169.254.12.7 (no DHCP).]  | [100.72.14.3] [169.254.12.7]
+
+== Line: "nat"  URL+IP: "203"  -> 1 rows
+Line                                                                              | URL+IP
+[from the office (192.168.4.0/24, NAT to 203.0.113.7) still reached the proxy at] | [192.168.4.0] [203.0.113.7]
+
+== Line: "zzz"  URL+IP: ""  -> 0 rows
+(none)
+
+== Line: ""  URL+IP: "10.20.1.1"  -> 1 rows
+Line                                                                                | URL+IP
+[The web tier at 10.20.1.10 and 10.20.1.11 lost its upstream around 09:40. Traffic] | [10.20.1.10] [10.20.1.11]
+
+== Line: ""  URL+IP: "!10.20.1.1"  -> 0 rows
+(none)
+
+== Line: ""  URL+IP: "!10.20.1.11"  -> 1 rows
+Line                                                                                | URL+IP
+[The web tier at 10.20.1.10 and 10.20.1.11 lost its upstream around 09:40. Traffic] | [10.20.1.10] [10.20.1.11]
+
+== Line: ""  URL+IP: "!8.8.8.8"  -> 1 rows
+Line                                                                       | URL+IP
+[Resolvers tried: 8.8.8.8, 1.1.1.1 and 9.9.9.9. The cable modem hands out] | [8.8.8.8] [1.1.1.1] [9.9.9.9]
+
+== Line: ""  URL+IP: "!"  -> 13 rows
+Line                                                                                | URL+IP
+[From: Alice Example <alice@example.com>]                                           | ?
+[To: ops-team@corp.example.org, bob.smith+alerts@mail.example.net]                  | ?
+[Subject: outage report]                                                            | ?
+[Hi all,]                                                                           | ?
+[The web tier at 10.20.1.10 and 10.20.1.11 lost its upstream around 09:40. Traffic] | [10.20.1.10] [10.20.1.11]
+[from the office (192.168.4.0/24, NAT to 203.0.113.7) still reached the proxy at]   | [192.168.4.0] [203.0.113.7]
+[172.16.5.20, but nothing past 172.31.255.254 answered. 172.32.0.1 is not ours.]    | [172.16.5.20] [172.31.255.254] [172.32.0.1]
+[Resolvers tried: 8.8.8.8, 1.1.1.1 and 9.9.9.9. The cable modem hands out]          | [8.8.8.8] [1.1.1.1] [9.9.9.9]
+[100.72.14.3 (carrier NAT), and one laptop came up with 169.254.12.7 (no DHCP).]    | [100.72.14.3] [169.254.12.7]
+[Loopback 127.0.0.1 was fine. Not addresses: 10.20.300.1, 1.2.3, 999.1.1.1.]        | [127.0.0.1]
+[Status page: https://status.example.com/incidents/2026-10-27?view=full.]           | [https://status.example.com/incidents/2026-10-27?view=full]
+[Runbook: http://wiki.corp.example.org/ops/outage#upstream (see step 4).]           | [http://wiki.corp.example.org/ops/outage#upstream]
+[Vendor ticket: https://support.example.net/t/48151 - escalate to noc@example.net.] | [https://support.example.net/t/48151]

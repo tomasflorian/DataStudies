@@ -1,0 +1,19 @@
+EMPLOYEE ONBOARDING FORM (made up: names and numbers are not real people's)
+
+Name: Jane Doe
+Social Insurance Number
+    (as on your card)
+    046 454 286
+Date of birth: 1985-03-14
+Phone: 613 555 0199
+
+Name: Marc Tremblay
+S.I.N.: 130-692-544        Employee no. 004417
+
+Name: Priya Shah
+SIN 287654321
+Bank account: 1234567890 (transit 00123)
+
+Name: Lee Wong
+Social insurance no.: pending, will send later
+Badge: 123 456 789 (not a SIN, but in the same form and less than 300 characters after a label)

@@ -1,0 +1,12 @@
+FullRecord  1 value, 1 place
+GeneralRecord  4 values, 4 places
+Host  3 values, 3 places
+HostRecord  3 values, 3 places
+IP  4 values, 4 places
+IPRecord  3 values, 3 places
+
+GeneralRecord                                    | Host    | IP
+[Record:⏎box at 192.168.1.9⏎⏎]                   | ?       | [192.168.1.9]
+[Record:⏎web05 at 192.168.1.3 and 192.168.1.4⏎⏎] | [web05] | [192.168.1.3] [192.168.1.4]
+[Record:⏎web06, address unknown⏎⏎]               | [web06] | ?
+[Record:⏎web07 at 192.168.1.8]                   | [web07] | [192.168.1.8]

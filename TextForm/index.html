@@ -3,110 +3,100 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TextForm</title>
+<title>TextForm Cutter</title>
 <style>
-  :root { --label: #5b6bb0; }
   body { font: 15px/1.5 system-ui, sans-serif; margin: 0; background: #fafafa; color: #222; }
-  main { max-width: 900px; margin: 0 auto; padding: 16px; }
-  header { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
-  h1 { font-size: 18px; margin: 0; }
-  #mode { color: #666; font-size: 13px; min-width: 10em; }
-  #pills { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
-  .pill { border: 1px solid hsl(var(--h) 50% 60%); background: hsl(var(--h) 80% 92%); border-radius: 999px;
-          padding: 3px 12px; cursor: pointer; font: inherit; font-size: 13px; }
-  .pill.clear { --h: 0; background: white; border-color: #bbb; color: #555; }
-  .pill small { opacity: 0.55; font-size: 11px; }
-  .pill.within { box-shadow: 0 0 0 2px hsl(var(--h) 70% 45%); }
-  .pill.active { background: hsl(var(--h) 70% 45%); color: white; }
-  #pills input { border: 1px dashed #aaa; border-radius: 999px; padding: 3px 10px; font: inherit; font-size: 13px; width: 16em; }
+  main { padding: 8px 12px; }
+  header { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; font-size: 13px; }
+  h1 { font-size: 18px; margin: 0 8px 0 0; }
+  header input, header select, header button { font: inherit; }
+  #type { width: 9em; }
+  #reset { margin-left: auto; }
+  /* live updates off: what's shown is as of when they were turned off */
+  body.paused #found, body.paused #table, body.paused .dict textarea { background: #f4f4f4; }
+  body.paused label:has(#live) { color: #b06000; font-weight: 600; }
 
-  #editor .ProseMirror { background: white; border: 1px solid #ccc; border-radius: 6px; padding: 12px 16px;
-                         min-height: 240px; outline: none; font-family: ui-monospace, monospace; white-space: pre-wrap; }
+  #editor { height: calc(100vh - 70px); min-height: 160px; overflow: auto; resize: vertical;
+            background: white; border: 1px solid #ccc; border-radius: 6px; }
+  #editor .ProseMirror { padding: 8px 12px; min-height: 100%; box-sizing: border-box;
+                         outline: none; font-family: ui-monospace, monospace;
+                         /* no wrapping: a long line scrolls sideways inside the box */
+                         white-space: pre; width: max-content; min-width: 100%; }
   #editor p { margin: 0; }
-  #editor { position: relative; }
-  #editor .ProseMirror { padding-left: calc(16px + var(--margin, 0px)); }
-  /* objects that cover whole lines, drawn in the left margin by renderMargin() */
-  #margin { position: absolute; top: 0; left: 10px; pointer-events: none; }
-  .mobj { position: absolute; display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
-  .mobj .bar { align-self: stretch; flex: none; width: 3px; margin: 4px 0; border-radius: 2px; background: hsl(var(--h) 60% 50%); }
-  .mobj .mtext { font: 10px/1 system-ui, sans-serif; color: hsl(var(--h) 60% 35%); white-space: nowrap;
-                 overflow: hidden; text-overflow: ellipsis; }
-  .mobj.multi .mtext { writing-mode: vertical-rl; transform: rotate(180deg); }
-  #editor:not(.labels) .mtext { display: none; }
-  #editor.plain #margin { display: none; }
-  /* colours off: no fills or lines in the text, every label and margin bar in one colour */
-  #editor.mono .seg, #editor.mono .suggest { background: none; box-shadow: none; border: none; }
-  #editor.mono .lbl > span, #editor.mono .mtext { color: var(--label); }
-  /* colours off: labels placed by nesting depth, each on the top tread of a little stair */
-  #editor .stair { display: none; position: absolute; bottom: 8px; overflow: visible; pointer-events: none; }
-  #editor .stair path { fill: none; stroke: var(--label); stroke-width: 1; opacity: 0.55; }
-  #editor.mono .stair { display: block; }
-  #editor.mono .lbl > span { left: calc(-7px - var(--depth) * 7px); bottom: calc(15px + var(--depth) * 11px); }
-  #editor.mono .lbl.linelbl > span { bottom: calc(15px + (var(--depth) + 1) * 11px); }
-  #editor .linelbl .stair { display: none; }
-  #editor.mono .bar { background: var(--label); }
-  /* colours off: whole-line labels move from the margin to above the line (see paint in main.js) */
-  #editor .lbl.linelbl { display: none; }
-  #editor.mono.labels:not(.plain) .lbl.linelbl { display: inline-block; }
-  #editor.mono #margin { display: none; }
-  #editor.mono .ProseMirror { padding-left: 40px; }
-  #editor.mono.labels:not(.plain) p.tall { padding-top: calc(var(--extra) * 11px); }
-  /* drawing is done in main.js (the paint plugin): --h is the smallest object's colour,
-     --lines its underline plus one line further down for every bigger object around it */
-  #editor .seg { background: hsl(var(--h) 80% 88%); box-shadow: var(--lines); }
-  /* two different objects touching: a thin bar where one ends and the next begins */
-  #editor .touching { border-left: 2px solid hsl(var(--h) 60% 40%); }
-  /* an existing object's text found untagged: offered, not applied. Double-click applies it. */
-  #editor .suggest { background-image: repeating-linear-gradient(135deg, hsl(var(--sh) 70% 80%) 0 3px, transparent 3px 7px);
-                     cursor: pointer; }
-  #editor .suggest:not(.seg) { box-shadow: inset 0 -1px hsl(var(--sh) 60% 50%); }
-  .apply { font: 11px system-ui, sans-serif; border: 1px solid hsl(var(--h) 50% 55%); background: white;
-           color: hsl(var(--h) 60% 30%); border-radius: 999px; padding: 0 6px; cursor: pointer; }
-
-  /* labels: extra space between lines, each object's type written above where it starts.
-     A label is a zero-width widget; --lvl stacks the labels of nested objects upward. */
-  #editor.labels .ProseMirror { line-height: 3.4; }
-  #editor .lbl { display: none; }
-  #editor.labels .lbl { display: inline-block; position: relative; width: 0; }
-  #editor .lbl > span { position: absolute; left: calc(-7px - var(--indent, 0) * 7px); bottom: calc(15px + var(--lvl) * 11px);
-                        font: 10px/1 system-ui, sans-serif; color: hsl(var(--h) 60% 35%);
-                        white-space: nowrap; pointer-events: none; user-select: none; }
-  #editor .lbl.maybe > span { font-style: italic; opacity: 0.8; }
-
-  #editor.plain .seg, #editor.plain .suggest { background: none; box-shadow: none; border: none; }
-  #editor.plain .lbl { display: none; }
-
-  h2 { font-size: 14px; margin: 18px 0 6px; color: #555; }
-  #objects { font-size: 13px; color: #666; }
-  .obj { display: flex; gap: 10px; padding: 3px 0; color: #222; }
-  .otype { background: hsl(var(--h) 80% 90%); border: 1px solid hsl(var(--h) 50% 70%); border-radius: 999px;
-           padding: 0 6px; min-width: 9em; font: inherit; font-size: 12px; }
-  .otext { font-family: ui-monospace, monospace; flex: 1; }
-  .addobj { display: flex; gap: 6px; margin-bottom: 8px; }
-  .addobj input { flex: 1; max-width: 20em; font: inherit; font-size: 13px; }
-  .ocount { color: #999; }
-  .remove { border: none; background: none; color: #999; cursor: pointer; }
-  .oid { color: #aaa; font-family: ui-monospace, monospace; }
+  /* one layer per found value; nested values build up the colour */
+  /* #editor .found: its layers are set in cutter.js */
   .hint { color: #888; font-size: 12px; margin-top: 6px; }
+
+  /* three columns: dictionaries | the text, as tall as the window | the types found and the table.
+     The side columns scroll on their own, so they stay beside the text. */
+  .layout { display: grid; grid-template-columns: minmax(220px, 18%) 1fr minmax(460px, 49%); gap: 12px; align-items: start; }
+  .layout > aside { position: sticky; top: 8px; max-height: calc(100vh - 70px); overflow: auto; }
+  @media (max-width: 1000px) {
+    .layout { grid-template-columns: 1fr; }
+    .layout > aside { position: static; max-height: none; }
+    .layout > section { order: -1; } /* the text first */
+  }
+  .layout > section { min-width: 0; } /* a long line mustn't widen the middle column */
+  h2 { font-size: 13px; margin: 0 0 4px; color: #555; }
+
+  .dict { background: white; border: 1px solid #ddd; border-radius: 6px; padding: 4px 6px; margin-bottom: 6px; }
+  .dict.off { opacity: 0.5; }
+  .dict .head { display: flex; gap: 6px; align-items: center; margin-bottom: 2px; }
+  .dict .name { font: 600 13px system-ui, sans-serif; border: none; flex: 1; }
+  .dict textarea { width: 100%; box-sizing: border-box; font: 13px/1.4 ui-monospace, monospace; border: 1px solid #eee; resize: vertical;
+                  white-space: pre; overflow-x: auto; } /* a rule a line: long ones scroll, they don't wrap */
+  .remove { border: none; background: none; color: #999; cursor: pointer; font-size: 15px; }
+  .add { font: inherit; font-size: 13px; }
+  .adds { display: flex; gap: 6px; }
+  .adds select { min-width: 0; flex: 1; }
+
+  #found { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+  .type-pick { font: 12px ui-monospace, monospace; border: 1px solid #d8c060; background: #fffbe6;
+               border-radius: 4px; padding: 1px 6px; cursor: pointer; color: #806600; }
+  .type-pick.in { background: #ffe680; }
+  .none { color: #bbb; font-size: 13px; }
+
+  #tablebar { margin-bottom: 6px; }
+  #columns { width: 100%; box-sizing: border-box; font: 13px ui-monospace, monospace; }
+  #table table { border-collapse: collapse; font-size: 13px; background: white; }
+  #table th { text-align: left; color: #806600; font-weight: 600; border-bottom: 1px solid #ddd; padding: 3px 10px 3px 0; }
+  #table td { border-bottom: 1px solid #f0f0f0; padding: 3px 10px 3px 0; vertical-align: top; }
+  #table td .cell { font: 12px ui-monospace, monospace; display: block; white-space: pre; } /* several values: one a line */
+  #table .hole { color: #bbb; }
+  #table .filters th { padding: 0 10px 4px 0; }
+  #table .filters input { width: 100%; min-width: 5em; box-sizing: border-box; font: 12px ui-monospace, monospace;
+                          border: 1px solid #e4e4e4; border-radius: 3px; padding: 1px 4px; }
+  #table .count { color: #999; font-size: 12px; margin-top: 4px; }
 </style>
 </head>
 <body>
 <main>
   <header>
-    <h1>TextForm</h1>
-    <label><input type="checkbox" id="overlay" checked> form overlay</label>
-    <label><input type="checkbox" id="labels" checked> labels</label>
-    <label><input type="checkbox" id="colors" checked> colours</label>
+    <h1>TextForm Cutter</h1>
+    <select id="samples" title="Load a text (the dictionaries stay as they are; Ctrl+Z undoes it)"></select>
+    <span>cut selection as</span>
+    <input id="type" list="types" placeholder="type" value="Keyword">
+    <span>into</span>
+    <select id="into"></select>
+    <button id="cut" title="Cut the selection into the dictionary (Ctrl+Shift+X)">cut</button>
+    <label title="Off: nothing is matched again while you type, in the text or a dictionary. On: catches up at once."><input type="checkbox" id="live" checked> live</label>
     <button id="reset">reset</button>
-    <span id="mode"></span>
   </header>
-  <div id="pills"></div>
-  <div id="editor" class="labels"></div>
-  <div class="hint">Select text and click a pill to tag it. With no selection a pill works like the bold button: on, type, off.
-    Right-click a pill to remove it. Text and pills are saved in this browser.</div>
-  <h2>Objects</h2>
-  <div id="objects"></div>
+  <datalist id="types"></datalist>
+  <div class="layout">
+    <aside><h2>Dictionaries</h2><div id="dicts"></div></aside>
+    <section>
+      <div id="editor" title="The text is never changed. Select some of it, give a type, and cut: that adds a Type:value line to a dictionary. Or type lines into a dictionary yourself. Loaded dictionaries light up their values."></div>
+    </section>
+    <aside>
+      <h2 title="The types found in the text: click one to add it to the table, again to take it out">Found</h2><div id="found"></div>
+      <h2 title="A row for each place the first type is found; the others are what's nearest it">Table</h2>
+      <div id="tablebar"><input id="columns" placeholder="columns: types, e.g. Group, Date, URL+IP, or click them under Found"></div>
+      <div id="table"></div>
+    </aside>
+  </div>
 </main>
-<script src="dist/app.js"></script>
+<script src="dist/samples.js"></script>
+<script src="dist/cutter.js"></script>
 </body>
 </html>
